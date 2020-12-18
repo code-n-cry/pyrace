@@ -8,9 +8,9 @@ from PyQt5.QtGui import QIcon
 class RegWindow(QWidget):
     def __init__(self, parent=None):
         super(RegWindow, self).__init__(parent, Qt.Window)
-        uic.loadUi('Reg.ui', self)
-        self.setWindowIcon(QIcon('reg.png'))
-        self.db = sqlite3.connect('accounts.db')
+        uic.loadUi('data/Reg.ui', self)
+        self.setWindowIcon(QIcon('../login&register/data/reg.png'))
+        self.db = sqlite3.connect('data/accounts.db')
         self.cur = self.db.cursor()
         self.regButton.clicked.connect(self.reg)
         self.pasEdit.setEchoMode(QLineEdit.Password)

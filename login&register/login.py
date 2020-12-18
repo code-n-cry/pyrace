@@ -4,14 +4,16 @@ import sqlite3
 import sys
 from PyQt5.QtGui import QIcon
 from register import RegWindow
+import os
+import subprocess
 
 
 class LoginWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('Login.ui', self)
-        self.setWindowIcon(QIcon('logging.jpg'))
-        self.db = sqlite3.connect('accounts.db')
+        uic.loadUi('data/Login.ui', self)
+        self.setWindowIcon(QIcon('../login&register/data/logging.jpg'))
+        self.db = sqlite3.connect('data/accounts.db')
         self.cur = self.db.cursor()
         self.cur.execute("""CREATE TABLE IF NOT EXISTS users(login, email, password)""")
         self.db.commit()
@@ -32,7 +34,13 @@ class LoginWindow(QMainWindow):
                 users WHERE login=?""", (login, )).fetchone()
                 if true_password:
                     if true_password[0] == ' '.join(format(ord(x), 'b') for x in password)[::-1]:
-                        exit()
+                        self.hide()
+                        print(os.getcwd())
+                        path = '/'.join(os.getcwd().replace('\\', '/').split('/')[:-1])
+                        dir = '/menu/menu.py'
+                        way_to_menu_file = path + dir
+                        print(way_to_menu_file)
+                        subprocess.call(f'python {way_to_menu_file}', shell=True)
                     else:
                         self.error.setText('Неправильный пароль!')
                 else:
