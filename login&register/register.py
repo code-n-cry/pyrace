@@ -15,8 +15,6 @@ class RegWindow(QWidget):
         self.regButton.clicked.connect(self.reg)
         self.pasEdit.setEchoMode(QLineEdit.Password)
         self.pasEdit2.setEchoMode(QLineEdit.Password)
-        print(self.cur.execute('SELECT * FROM users').fetchall())
-
     def reg(self):
         self.errors.clear()
         login = self.logEdit.text()
@@ -54,7 +52,7 @@ class RegWindow(QWidget):
             self.errors.setText('Пароли должны совпадать!')
 
     def check_login(self, login):
-        login  = login.lower()
+        login = login.lower()
         cyrillic = 'йцукенгшщзхъёфывапролджэячсмитьбю'
         for i in cyrillic:
             if i in login:
