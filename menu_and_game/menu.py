@@ -6,6 +6,7 @@ import sqlite3
 from animated_background import Car
 from player import Player
 from button import Button
+from road import Road
 
 
 class Menu:
@@ -35,7 +36,7 @@ class Menu:
                                   self.shop)
         self.buttons = [self.start_button, self.quit_button, self.shop_button]
         self.is_started = False
-        melodies = [path + '\\menu_dara\\CB2077.mp3', path + '\\menu_data\\menu_music.wav']
+        melodies = [path + '\\menu_data\\CB2077.mp3', path + '\\menu_data\\menu_music.wav']
         self.music = pygame.mixer.Sound(random.choice(melodies))
         self.car = Car()
         self.sprites = pygame.sprite.Group(self.car)
@@ -98,15 +99,11 @@ if __name__ == '__main__':
     screen.blit(background, (0, 0))
     all_sprites = pygame.sprite.Group()
     p = Player(all_sprites)
-    main_menu = Menu(str(sys.argv[1]))
+    r = Road()
+    main_menu = Menu(str(sys.argv[0]))
     running = True
     fps = 60
-    road_default = pygame.image.load('\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\road.jpg')
-    road_default = pygame.transform.scale(road_default, (800, 800))
-    road_desert = pygame.image.load('\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\road.png')
-    road_desert = pygame.transform.scale(road_desert, (800, 800))
-    roads = [road_default, road_desert]
-    road = random.randint(0, 1)
+    speed = 5
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -123,7 +120,8 @@ if __name__ == '__main__':
         if not main_menu.is_started:
             main_menu.render()
         else:
-            screen.blit(roads[road], (0, 0))
+            screen.fill((0, 0, 0))
+            screen.blit(r.move(speed), (0, 0))
             all_sprites.update(event)
             all_sprites.draw(screen)
             main_menu.game_over()
