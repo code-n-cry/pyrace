@@ -7,6 +7,7 @@ from animated_background import Car
 from player import Player
 from button import Button
 from shop import Shop
+from coin import Coin
 
 
 class Menu:
@@ -33,7 +34,7 @@ class Menu:
         self.buttons = [self.start_button, self.quit_button, self.shop_button]
         self.is_started = False
         self.is_shopped = False
-        melodies = [path + '\\menu_data\\CB2077.mp3', path + '\\menu_data\\menu_music.wav']
+        melodies = [path + '\\menu_data\\menu_music.wav']
         self.music = pygame.mixer.Sound(random.choice(melodies))
         self.car = Car()
         self.sprites = pygame.sprite.Group(self.car)
@@ -96,6 +97,7 @@ if __name__ == '__main__':
     background = pygame.Surface(screen.get_size())
     screen.blit(background, (0, 0))
     all_sprites = pygame.sprite.Group()
+    coin_sprites = pygame.sprite.Group()
     p = Player(all_sprites)
     main_menu = Menu(str(sys.argv[1]))
     shop = Shop(screen, main_menu.login)
