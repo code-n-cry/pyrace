@@ -6,10 +6,11 @@ from button import Button
 
 class Shop:
     def __init__(self, surface, login):
+        self.return_menu = False
         path_to_db = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\users_info.db'
         self.con = sqlite3.connect(path_to_db)
         cur = self.con.cursor()
-        data_str = cur.execute('SELECT data FROM info WHERE login=?', (login, )).fetchone()[0]
+        data_str = cur.execute('SELECT data FROM info WHERE login=?', (login,)).fetchone()[0]
         cur.close()
         self.coins = int(data_str.split('_')[0][1:])
         self.cars = [int(i) for i in data_str.split('_')[1:]]
@@ -35,7 +36,7 @@ class Shop:
         for i in range(9):
             if self.cars[i] == 1:
                 b = Button(x - 25, y, 75, 30, 'Куплено', self.surface, (66, 245, 206), (0, 0, 0), (227, 66, 245), 0, 25,
-                       self.buy, False)
+                           self.buy, False)
             else:
                 b = Button(x, y, 32, 30, first_price, self.surface, (66, 245, 206), (0, 0, 0), (227, 66, 245), 0, 35,
                            self.buy, False)
@@ -57,6 +58,7 @@ class Shop:
             else:
                 y += 270
                 x = 100
+        self.render_text()
 
     def buy(self):
         price = self.buttons[self.bought_item].get_text()
@@ -69,11 +71,11 @@ class Shop:
                 self.coins -= int(price)
                 self.cars[self.bought_item] = 1
                 if self.coins > 0:
-                    coins = '0' * (self.coins % 4) + str(self.coins)
+                    coins = '0' * len(str(1000 - self.coins)) + str(self.coins)
                 else:
                     coins = '0' * 4
                 cars_for_db = '_'.join([str(i) for i in self.cars])
-                str_for_db = f'{coins}_{cars_for_db}'
+                str_for_db = f'#{coins}_{cars_for_db}'
                 cur = self.con.cursor()
                 cur.execute('UPDATE info SET data=? WHERE login=?', (str_for_db, self.login))
                 self.con.commit()
@@ -96,3 +98,13 @@ class Shop:
     def check_mouse_up(self):
         for i in self.buttons:
             i.check_mouse_up()
+
+    def quit(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                return True
+
+    def render_text(self):
+        font = pygame.font.SysFont('Montserrat', 30)
+        text = font.render(f'Ваши монеты: {self.coins}', True, (255, 255, 255))
+        self.surface.blit(text, (0, 15))

@@ -10,8 +10,8 @@ class Player(pygame.sprite.Sprite):
         super().__init__(group)
         self.image = Player.image
         self.rect = self.image.get_rect()
-        self.rect.x = 350
-        self.rect.y = 500
+        self.rect.x = 450
+        self.rect.y = 580
         self.vx = 0
         self.vy = 0
 
@@ -27,5 +27,6 @@ class Player(pygame.sprite.Sprite):
                 self.rect.x += self.vx
 
     def check(self):
-        if self.rect.x == -73 or self.rect.x == 620:
-            return True
+        if 0 <= self.rect.x <= 700:
+            return False
+        return True

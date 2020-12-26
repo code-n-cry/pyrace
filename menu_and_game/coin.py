@@ -13,3 +13,6 @@ class Coin(pygame.sprite.Sprite):
         self.rect.x = 400
         self.rect.y = 400
 
+    def update(self):
+        self.rect.y += 2
+

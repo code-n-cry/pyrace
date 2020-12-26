@@ -34,7 +34,7 @@ class LoginWindow(QMainWindow):
                 if true_password[0] == ' '.join(format(ord(x), 'b') for x in password)[::-1]:
                     self.hide()
                     path = '/'.join(os.getcwd().replace('\\', '/').split('/')[:-1])
-                    directory = '/menu_and_game/menu.py'
+                    directory = '/menu_and_game/game_startup.py'
                     way_to_menu_file = path + directory
                     subprocess.call(f'python {way_to_menu_file} {login}', shell=True)
                 else:

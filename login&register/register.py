@@ -15,6 +15,7 @@ class RegWindow(QWidget):
         self.regButton.clicked.connect(self.reg)
         self.pasEdit.setEchoMode(QLineEdit.Password)
         self.pasEdit2.setEchoMode(QLineEdit.Password)
+
     def reg(self):
         self.errors.clear()
         login = self.logEdit.text()
