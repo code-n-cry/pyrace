@@ -1,11 +1,11 @@
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
-import sqlite3
-import sys
 from PyQt5.QtGui import QIcon
 from register import RegWindow
 import os
 import subprocess
+import sqlite3
+import sys
 
 
 class LoginWindow(QMainWindow):
@@ -29,8 +29,7 @@ class LoginWindow(QMainWindow):
         login = self.loginEdit.text()
         password = self.pasEdit.text()
         if login and password:
-            true_password = self.cur.execute("""SELECT password FROM
-                users WHERE login=?""", (login,)).fetchone()
+            true_password = self.cur.execute("""SELECT password FROM users WHERE login=?""", (login,)).fetchone()
             if true_password:
                 if true_password[0] == ' '.join(format(ord(x), 'b') for x in password)[::-1]:
                     self.hide()

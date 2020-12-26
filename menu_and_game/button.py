@@ -5,7 +5,7 @@ class Button:
     def __init__(self, x, y, w, h, text, surface, bcolor, tcolor, hcolor, border, tsize, func, centr_text=False):
         self.font = pygame.font.SysFont('Montserrat', tsize)
         self.bound = pygame.Rect(x, y, w, h)
-        self.text = text
+        self.text = str(text)
         self.surface = surface
         self.button_color = bcolor
         self.text_color = tcolor
@@ -49,3 +49,18 @@ class Button:
 
     def on_click(self):
         self.on_click_func()
+
+    def get_text(self):
+        return self.text
+
+    def set_text(self, text):
+        self.text = str(text)
+
+    def get_coords(self):
+        return self.bound.x, self.bound.y, self.bound.w, self.bound.h
+
+    def set_coords(self, coords, tsize):
+        self.font = pygame.font.SysFont('Montserrat', tsize)
+        x, y, w, h = coords
+        self.bound = pygame.Rect(x, y, w, h)
+
