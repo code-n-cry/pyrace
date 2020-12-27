@@ -20,15 +20,20 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size, pygame.NOFRAME)
     background = pygame.Surface(screen.get_size())
     all_sprites = pygame.sprite.Group()
-    main_menu = Menu(screen, background, str(sys.argv[1]))
-    shop = Shop(screen, main_menu.login)
     road = Road(screen)
-    main_player = Player(all_sprites)
+    main_menu = Menu(screen, background, all_sprites, road, str(sys.argv[1]))
+    shop = Shop(screen, main_menu.login)
+    main_player = Player(all_sprites, coin_sprites)
     screen.blit(background, (0, 0))
+    all_sprites.add(coin_sprites)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE and main_menu.game_over:
+                    main_menu.is_started = False
+                    main_player.respawn()
             if event.type == pygame.MOUSEMOTION:
                 if not main_menu.is_started and not main_menu.is_shopped:
                     main_menu.check_mouse_motion(event.pos)
@@ -50,16 +55,11 @@ if __name__ == '__main__':
             screen.fill('#c0c0c0')
             shop.render()
         if main_menu.is_started and not main_menu.is_shopped:
-            if not main_menu.game_over(main_player):
-                road.move(5)
-                all_sprites.update(event)
-                coin_sprites.update()
-                coin_sprites.draw(screen)
-                all_sprites.draw(screen)
-            else:
-                road.move(0)
-                all_sprites.draw(screen)
-                main_menu.game_over(main_player)
+            road.move()
+            all_sprites.update(event)
+            all_sprites.draw(screen)
+            main_menu.check_game_over(main_player)
+
         if shop.quit(event):
             main_menu.is_shopped = False
         pygame.display.flip()

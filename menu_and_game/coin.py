@@ -12,11 +12,11 @@ class Coin(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.vy = 5
         self.y = y
 
-    def update(self):
+    def update(self, event):
         if self.rect.y < 750:
-            self.rect.y += 2
+            self.rect.y += self.vy
         else:
             self.rect.y = self.y
-

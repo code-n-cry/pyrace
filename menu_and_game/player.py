@@ -15,6 +15,7 @@ class Player(pygame.sprite.Sprite):
         self.vx = 0
         self.vy = 0
         self.got_coins = 0
+        self.coin_group = coin_group
 
     def update(self, event):
         if event.type == pygame.KEYDOWN:
@@ -26,9 +27,13 @@ class Player(pygame.sprite.Sprite):
                     self.vx = 3
             if not self.check():
                 self.rect.x += self.vx
-        if pygame.sprite.groupcollide(self.g)
+        if pygame.sprite.spritecollide(self, self.coin_group, True):
+            self.got_coins += 1
 
     def check(self):
         if 0 <= self.rect.x <= 700:
             return False
         return True
+
+    def respawn(self):
+        self.rect.x = 450
