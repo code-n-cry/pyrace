@@ -3,7 +3,7 @@ import os
 
 
 class Coin(pygame.sprite.Sprite):
-    image = pygame.image.load('\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\menu_data\\coin.png')
+    image = pygame.image.load('\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\menu_data\\coin.jpg')
 
     def __init__(self, group):
         super().__init__(group)
