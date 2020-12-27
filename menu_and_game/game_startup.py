@@ -1,9 +1,11 @@
 import sys
 import pygame
+import random
 from player import Player
 from shop import Shop
 from road import Road
 from menu import Menu
+from coin import Coin
 
 if __name__ == '__main__':
     fps = 60
@@ -12,6 +14,9 @@ if __name__ == '__main__':
     pygame.mixer.init()
     clock = pygame.time.Clock()
     size = width, height = 800, 800
+    coin_sprites = pygame.sprite.Group()
+    for i in range(5):
+        c = Coin(coin_sprites, random.randrange(50, 750), random.randrange(50, 530))
     screen = pygame.display.set_mode(size, pygame.NOFRAME)
     background = pygame.Surface(screen.get_size())
     all_sprites = pygame.sprite.Group()
@@ -48,6 +53,8 @@ if __name__ == '__main__':
             if not main_menu.game_over(main_player):
                 road.move(5)
                 all_sprites.update(event)
+                coin_sprites.update()
+                coin_sprites.draw(screen)
                 all_sprites.draw(screen)
             else:
                 road.move(0)

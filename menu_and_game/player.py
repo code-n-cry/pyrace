@@ -6,7 +6,7 @@ class Player(pygame.sprite.Sprite):
     image = pygame.image.load('\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\Car1.png')
     image.set_colorkey((255, 255, 255))
 
-    def __init__(self, group):
+    def __init__(self, group, coin_group, enemy_group=False, nitro_group=False):
         super().__init__(group)
         self.image = Player.image
         self.rect = self.image.get_rect()
@@ -14,6 +14,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = 580
         self.vx = 0
         self.vy = 0
+        self.got_coins = 0
 
     def update(self, event):
         if event.type == pygame.KEYDOWN:
@@ -25,6 +26,7 @@ class Player(pygame.sprite.Sprite):
                     self.vx = 3
             if not self.check():
                 self.rect.x += self.vx
+        if pygame.sprite.groupcollide(self.g)
 
     def check(self):
         if 0 <= self.rect.x <= 700:

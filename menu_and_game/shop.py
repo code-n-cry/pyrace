@@ -64,7 +64,6 @@ class Shop:
         price = self.buttons[self.bought_item].get_text()
         if price.isdigit():
             if self.coins >= int(price):
-                print('Куплено!')
                 self.buttons[self.bought_item].set_text('Куплено')
                 x, y, w, h = self.buttons[self.bought_item].get_coords()
                 self.buttons[self.bought_item].set_coords((x - 25, y, w + 45, h), 25)
