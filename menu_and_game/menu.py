@@ -14,7 +14,6 @@ class Menu:
         cur = self.con.cursor()
         cur.execute('CREATE TABLE IF NOT EXISTS info(login, data)')
         self.con.commit()
-        self.coins = 0
         self.cars = 1
         self.login = user_login
         logins = [i[0] for i in cur.execute('SELECT login FROM info').fetchall()]
@@ -72,7 +71,7 @@ class Menu:
         self.is_shopped = True
         self.music.stop()
 
-    def check_game_over(self, player):
+    def check_game_over(self, player, shop):
         if player.check():
             cur = self.con.cursor()
             data_str = cur.execute('SELECT data FROM info WHERE login=?', (self.login,)).fetchone()[0]
@@ -86,6 +85,7 @@ class Menu:
             player.got_coins = 0
             self.game_over = True
             self.game_over_text()
+            shop.update_coins()
             return True
 
     def game_over_text(self):

@@ -107,3 +107,8 @@ class Shop:
         font = pygame.font.SysFont('Montserrat', 30)
         text = font.render(f'Ваши монеты: {self.coins}', True, (255, 255, 255))
         self.surface.blit(text, (0, 15))
+
+    def update_coins(self):
+        cur = self.con.cursor()
+        self.coins = int(
+            cur.execute('SELECT data FROM info WHERE login=?', (self.login,)).fetchone()[0][1:].split('_')[0])
