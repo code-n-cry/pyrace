@@ -22,11 +22,26 @@ class Player(pygame.sprite.Sprite):
             if event.key == pygame.K_LEFT:
                 if self.rect.x > 0:
                     self.vx = -3
-            if event.key == pygame.K_RIGHT:
+                    self.image = pygame.transform.rotate(Player.image, 30)
+                    self.image.set_colorkey((255, 255, 255))
+            elif event.key == pygame.K_RIGHT:
                 if self.rect.x < 800 - self.rect.width:
                     self.vx = 3
+                    self.image = pygame.transform.rotate(Player.image, 330)
+                    self.image.set_colorkey((255, 255, 255))
+            else:
+                self.vx = 0
             if not self.check():
                 self.rect.x += self.vx
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT:
+                if self.rect.x > 0:
+                    self.image = Player.image
+                    self.image.set_colorkey((255, 255, 255))
+            if event.key == pygame.K_RIGHT:
+                if self.rect.x < 800 - self.rect.width:
+                    self.image = Player.image
+                    self.image.set_colorkey((255, 255, 255))
         if pygame.sprite.spritecollide(self, self.coin_group, True):
             self.got_coins += 1
 

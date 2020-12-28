@@ -25,11 +25,11 @@ if __name__ == '__main__':
     all_sprites = pygame.sprite.Group()
     nitro_sprites = pygame.sprite.Group()
     road = Road(screen)
-    main_menu = Menu(screen, background, all_sprites, road, str(sys.argv[1]))
+    main_menu = Menu(screen, background, all_sprites, road, str(sys.argv[0]))
     shop = Shop(screen, main_menu.login)
     main_player = Player(all_sprites, coin_sprites)
-    for i in range(5):
-        n = Nitro(nitro_sprites, road, random.randrange(50, 750), random.randrange(50, 530))
+    # for i in range(5):
+        # n = Nitro(nitro_sprites, road, random.randrange(50, 750), random.randrange(50, 530))
     screen.blit(background, (0, 0))
     game = Game(main_player, coin_sprites, nitro_sprites, False, all_sprites, road, screen)
     while running:
