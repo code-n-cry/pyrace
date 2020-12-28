@@ -4,15 +4,11 @@ import pygame
 import os
 import sqlite3
 from animated_background import Car
-from player import Player
 from button import Button
-from shop import Shop
-from road import Road
-from coin import Coin
 
 
 class Menu:
-    def __init__(self, user_login):
+    def __init__(self, screen, background, all_sprites, road, user_login):
         path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game'
         self.con = sqlite3.connect(path + '\\game_data/users_info.db')
         cur = self.con.cursor()
@@ -21,7 +17,6 @@ class Menu:
         self.coins = 0
         self.cars = 1
         self.login = user_login
-        self.g_o = False
         logins = [i[0]
                   for i in cur.execute('SELECT login FROM info').fetchall()]
         if user_login not in logins:
@@ -42,17 +37,20 @@ class Menu:
         self.music = pygame.mixer.Sound(random.choice(melodies))
         self.car = Car()
         self.sprites = pygame.sprite.Group(self.car)
-        self.check_pause = 0
+        self.screen = screen
+        self.background = background
+        self.all_sprites = all_sprites
+        self.road = road
+        self.game_over = False
 
     def render(self):
-        self.music.play()
-        self.sprites.clear(screen, background)
+        # self.music.play()
+        self.sprites.clear(self.screen, self.background)
         self.sprites.update()
-        self.sprites.draw(screen)
+        self.sprites.draw(self.screen)
         self.quit_button.render()
         self.start_button.render()
         self.shop_button.render()
-        '''self.render_text()'''
 
     def check_mouse_motion(self, pos):
         for i in self.buttons:
@@ -77,92 +75,32 @@ class Menu:
         self.is_shopped = True
         self.music.stop()
 
-    '''def render_text(self):
-        font = pygame.font.SysFont('Montserrat', 55)
-        text_object_1 = font.render(
-            f'Ваши монеты: {self.coins}', True, (255, 255, 255))
-        text_object_2 = font.render(
-            f'Машин у вас: {self.cars}', True, (255, 255, 255))
-        screen.blit(text_object_1, (100, 400))
-        screen.blit(text_object_2, (100, 500))'''  # в магазине сделаем
-
-    def game_over(self, player):
+    def check_game_over(self, player, shop):
         if player.check():
-            font = pygame.font.SysFont('Montserrat', 100)
-            text = font.render(f'GAME OVER', True, (255, 0, 0))
-            font2 = pygame.font.SysFont('Montserrat', 40)
-            text2 = font2.render(
-                'Нажмите "ESC" для перехода в главное меню', True, (255, 0, 0))
-            screen.blit(text, (200, 300))
-            screen.blit(text2, (83, 500))
+            cur = self.con.cursor()
+            data_str = cur.execute(
+                'SELECT data FROM info WHERE login=?', (self.login,)).fetchone()[0]
+            coins = data_str[1:].split('_')[0]
+            old_coins = int(coins)
+            coins = '0' * len(str(1000 - player.got_coins +
+                                  old_coins)) + str(player.got_coins + old_coins)
+            data_str = '#' + coins + '_' + \
+                '_'.join(data_str[1:].split('_')[1:])
+            cur.execute('UPDATE info SET data=? WHERE login=?',
+                        (data_str, self.login))
+            self.con.commit()
+            cur.close()
+            player.got_coins = 0
+            self.game_over = True
+            self.game_over_text()
+            shop.update_coins()
             return True
 
-    def pause(self,event):
-        
-        d = pygame.font.SysFont('Montserrat', 100)
-        a = d.render(f'ПАУЗА', True, (255, 0, 0))
-        screen.blit(a, (200, 300))
-        print(4)
-
-
-if __name__ == '__main__':
-    pygame.init()
-    pygame.mixer.init()
-    clock = pygame.time.Clock()
-    size = width, height = 800, 800
-    screen = pygame.display.set_mode(size, pygame.NOFRAME)
-    background = pygame.Surface(screen.get_size())
-    screen.blit(background, (0, 0))
-    all_sprites = pygame.sprite.Group()
-    main_player = Player(all_sprites)
-    main_menu = Menu(str(sys.argv[1]))
-    shop = Shop(screen, main_menu.login)
-    road = Road(screen)
-    running = True
-    fps = 60
-    road_default = pygame.image.load('\\'.join(os.getcwd().split(
-        '\\')[:-1]) + '\\menu_and_game\\game_data\\road.jpg')
-    road_default = pygame.transform.scale(road_default, (800, 800))
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                if main_menu.game_over:
-                    if event.key == pygame.K_ESCAPE:
-                        main_menu.is_started = False
-                        main_player.respawner = True
-                        main_player.respawn()
-            if event.type == pygame.MOUSEMOTION:
-                if not main_menu.is_started and not main_menu.is_shopped:
-                    main_menu.check_mouse_motion(event.pos)
-                if main_menu.is_shopped:
-                    shop.check_mouse_motion(event.pos)
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if not main_menu.is_started and not main_menu.is_shopped:
-                    main_menu.check_mouse_down(event.pos)
-                if main_menu.is_shopped:
-                    shop.check_mouse_down(event.pos)
-            if event.type == pygame.MOUSEBUTTONUP:
-                if not main_menu.is_started and not main_menu.is_shopped:
-                    main_menu.check_mouse_up()
-                if main_menu.is_shopped:
-                    shop.check_mouse_up()
-        if not main_menu.is_started and not main_menu.is_shopped:
-            main_menu.render()
-        if main_menu.is_shopped and not main_menu.is_started:
-            screen.fill('#c0c0c0')
-            shop.render()
-        if main_menu.is_started and not main_menu.is_shopped:
-            if not main_menu.game_over(main_player):
-                road.move(5)
-                all_sprites.update(event)
-                all_sprites.draw(screen)
-            else:
-                road.move(0)
-                '''all_sprites.draw(screen)'''
-                main_menu.game_over(main_player)
-        if shop.quit(event):
-            main_menu.is_shopped = False
-        pygame.display.flip()
-        clock.tick(fps)
+    def game_over_text(self):
+        font = pygame.font.SysFont('Montserrat', 100)
+        text = font.render(f'GAME OVER', True, (255, 0, 0))
+        font2 = pygame.font.SysFont('Montserrat', 40)
+        text2 = font2.render(
+            'Нажмите "ESC" для перехода в главное меню', True, (255, 0, 0))
+        self.screen.blit(text, (200, 300))
+        self.screen.blit(text2, (83, 500))
