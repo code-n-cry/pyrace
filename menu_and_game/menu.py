@@ -4,13 +4,11 @@ import pygame
 import os
 import sqlite3
 from animated_background import Car
-from player import Player
 from button import Button
-from road import Road
 
 
 class Menu:
-    def __init__(self, user_login):
+    def __init__(self, screen, background, all_sprites, road, user_login):
         path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game'
         self.con = sqlite3.connect(path + '\\game_data/users_info.db')
         cur = self.con.cursor()
@@ -18,16 +16,11 @@ class Menu:
         self.con.commit()
         self.coins = 0
         self.cars = 1
+        self.login = user_login
         logins = [i[0] for i in cur.execute('SELECT login FROM info').fetchall()]
         if user_login not in logins:
-            cur.execute('INSERT INTO info VALUES(?, ?)',
-                        (user_login, '#0000_01_1_0_0_0_0_0_0_0_0'))
+            cur.execute('INSERT INTO info VALUES(?, ?)', (user_login, '#0000_1_0_0_0_0_0_0_0_0'))
             self.con.commit()
-        else:
-            data = cur.execute(
-                'SELECT data FROM info where login=?', (user_login, )).fetchone()[0]
-            self.coins = int(data.split('_')[0][1:])
-            self.cars = int(data.split('_')[1])
         self.start_button = Button(10, 10, 132, 50, 'Играть', screen, (66, 245, 206), (0, 0, 0), (227, 66, 245), 0, 55,
                                    self.start_game)
         self.quit_button = Button(658, 8, 132, 45, 'Выход', screen, (66, 245, 206),
@@ -36,20 +29,25 @@ class Menu:
                                   self.shop)
         self.buttons = [self.start_button, self.quit_button, self.shop_button]
         self.is_started = False
+        self.is_shopped = False
         melodies = [path + '\\menu_data\\CB2077.mp3', path + '\\menu_data\\menu_music.wav']
         self.music = pygame.mixer.Sound(random.choice(melodies))
         self.car = Car()
         self.sprites = pygame.sprite.Group(self.car)
+        self.screen = screen
+        self.background = background
+        self.all_sprites = all_sprites
+        self.road = road
+        self.game_over = False
 
     def render(self):
-        self.music.play()
-        self.sprites.clear(screen, background)
+        #self.music.play()
+        self.sprites.clear(self.screen, self.background)
         self.sprites.update()
-        self.sprites.draw(screen)
+        self.sprites.draw(self.screen)
         self.quit_button.render()
         self.start_button.render()
         self.shop_button.render()
-        '''self.render_text()'''
 
     def check_mouse_motion(self, pos):
         for i in self.buttons:
@@ -71,59 +69,30 @@ class Menu:
         exit()
 
     def shop(self):
-        pass
+        self.is_shopped = True
+        self.music.stop()
 
-    '''def render_text(self):
-        font = pygame.font.SysFont('Montserrat', 55)
-        text_object_1 = font.render(
-            f'Ваши монеты: {self.coins}', True, (255, 255, 255))
-        text_object_2 = font.render(
-            f'Машин у вас: {self.cars}', True, (255, 255, 255))
-        screen.blit(text_object_1, (100, 400))
-        screen.blit(text_object_2, (100, 500))'''  # в магазине сделаем
+    def check_game_over(self, player):
+        if player.check():
+            cur = self.con.cursor()
+            data_str = cur.execute('SELECT data FROM info WHERE login=?', (self.login,)).fetchone()[0]
+            coins = data_str[1:].split('_')[0]
+            old_coins = int(coins)
+            coins = '0' * len(str(1000 - player.got_coins + old_coins)) + str(player.got_coins + old_coins)
+            data_str = '#' + coins + '_' + '_'.join(data_str[1:].split('_')[1:])
+            cur.execute('UPDATE info SET data=? WHERE login=?', (data_str, self.login))
+            self.con.commit()
+            cur.close()
+            player.got_coins = 0
+            self.game_over = True
+            self.game_over_text()
+            return True
 
-    def game_over(self):
-        if p.check():
-            font = pygame.font.SysFont('Montserrat', 100)
-            a = font.render(f'GAME OVER', True, (255, 0, 0))
-            screen.blit(a, (200, 300))
+    def game_over_text(self):
+        font = pygame.font.SysFont('Montserrat', 100)
+        text = font.render(f'GAME OVER', True, (255, 0, 0))
+        font2 = pygame.font.SysFont('Montserrat', 40)
+        text2 = font2.render('Нажмите "ESC" для перехода в главное меню', True, (255, 0, 0))
+        self.screen.blit(text, (200, 300))
+        self.screen.blit(text2, (83, 500))
 
-
-if __name__ == '__main__':
-    pygame.init()
-    pygame.mixer.init()
-    clock = pygame.time.Clock()
-    size = width, height = 800, 800
-    screen = pygame.display.set_mode(size, pygame.NOFRAME)
-    background = pygame.Surface(screen.get_size())
-    screen.blit(background, (0, 0))
-    all_sprites = pygame.sprite.Group()
-    p = Player(all_sprites)
-    r = Road()
-    main_menu = Menu(str(sys.argv[0]))
-    running = True
-    fps = 60
-    speed = 5
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.MOUSEMOTION:
-                if not main_menu.is_started:
-                    main_menu.check_mouse_motion(event.pos)
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if not main_menu.is_started:
-                    main_menu.check_mouse_down(event.pos)
-            elif event.type == pygame.MOUSEBUTTONUP:
-                if not main_menu.is_started:
-                    main_menu.check_mouse_up()
-        if not main_menu.is_started:
-            main_menu.render()
-        else:
-            screen.fill((0, 0, 0))
-            screen.blit(r.move(speed), (0, 0))
-            all_sprites.update(event)
-            all_sprites.draw(screen)
-            main_menu.game_over()
-        pygame.display.flip()
-        clock.tick(fps)

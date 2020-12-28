@@ -8,7 +8,7 @@ class Car(pygame.sprite.Sprite):
         self.car_images = []
         self.path = '/'.join(os.getcwd().replace('\\', '/').split('/')[:-1]) + '/menu_and_game/menu_data/'
         self.image_stand = pygame.image.load(self.path + 'car1.gif')
-        self.loadImages()
+        self.load_images()
         self.image = self.image_stand
         self.rect = self.image.get_rect()
         self.frame = 0
@@ -24,8 +24,8 @@ class Car(pygame.sprite.Sprite):
             self.frame = 0
         self.image = self.car_images[self.frame]
 
-    def loadImages(self):
+    def load_images(self):
         for i in range(1, 13):
             image_name = self.path + 'car%d.gif' % i
-            tmp_image = pygame.image.load(image_name)
-            self.car_images.append(tmp_image)
+            image = pygame.image.load(image_name)
+            self.car_images.append(image)

@@ -7,17 +7,19 @@ road_default = pygame.transform.scale(road_default, (800, 800))
 
 
 class Road:
-    def __init__(self):
+    def __init__(self, screen):
         self.image = road_default
         self.pos = 0
-        self.screen = pygame.Surface((800, 800))
+        self.screen = screen
         self.screen.fill((0, 0, 0))
+        self.speed = 5
 
-    def move(self, speed):
+    def move(self):
         self.screen.fill((0, 0, 0))
         self.screen.blit(self.image, (0, 0), (0, 800 - self.pos, 800, 800))
         self.screen.blit(self.image, (0, self.pos))
-        self.pos += speed
+        self.pos += self.speed
         if self.pos >= 800:
             self.pos = 0
         return self.screen
+
