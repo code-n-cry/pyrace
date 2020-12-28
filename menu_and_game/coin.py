@@ -19,4 +19,6 @@ class Coin(pygame.sprite.Sprite):
         if self.rect.y < 750:
             self.rect.y += self.vy
         else:
-            self.rect.y = self.y
+            self.kill()
+
+

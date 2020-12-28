@@ -19,16 +19,29 @@ class Player(pygame.sprite.Sprite):
 
     def update(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                 if self.rect.x > 0:
                     self.vx = -3
-            if event.key == pygame.K_RIGHT:
+                    self.image = pygame.transform.rotate(Player.image, 30)
+                    self.image.set_colorkey((255, 255, 255))
+            elif event.key == pygame.K_RIGHT or event.KEY == pygame.K_d:
                 if self.rect.x < 800 - self.rect.width:
                     self.vx = 3
+                    self.image = pygame.transform.rotate(Player.image, 330)
+                    self.image.set_colorkey((255, 255, 255))
+            else:
+                self.vx = 0
             if not self.check():
                 self.rect.x += self.vx
-        if pygame.sprite.spritecollide(self, self.coin_group, True):
-            self.got_coins += 1
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                if self.rect.x > 0:
+                    self.image = Player.image
+                    self.image.set_colorkey((255, 255, 255))
+            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                if self.rect.x < 800 - self.rect.width:
+                    self.image = Player.image
+                    self.image.set_colorkey((255, 255, 255))
 
     def check(self):
         if 0 <= self.rect.x <= 700:
