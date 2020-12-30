@@ -25,14 +25,15 @@ class RegWindow(QWidget):
         if login and email and pas and repeat_pas and repeat_pas == pas:
             if not self.check_login(login):
                 self.errors.setText('В логине не должно быть русских букв!')
-            elif not self.check_email(email):
-                if self.check_email(email) == 1:
+            if not self.check_email(email):
+                if self.check_email(email) == 0:
+                    print(1)
                     self.errors.setText('Введите email корректно!')
-                if self.check_email(email) == 2:
+                if self.check_email(email) == '':
                     self.errors.setText('Введите существующий email!')
-                if self.check_email(email) == 3:
+                if self.check_email(email) == []:
                     self.errors.setText('Аккаунт, зарегистрированный на эту почту, уже существует!')
-            elif not self.checking_password(pas):
+            if not self.checking_password(pas):
                 self.errors.setText(self.checking_password(pas))
             else:
                 logins = [i[0] for i in self.cur.execute("""SELECT login FROM users""").fetchall()]
@@ -43,13 +44,13 @@ class RegWindow(QWidget):
                     self.hide()
                 else:
                     self.errors.setText('Пользователь с таким логином уже существует!')
-        elif not login:
+        if not login:
             self.errors.setText('Введите логин!')
-        elif not email:
+        if not email:
             self.errors.setText('Введите e-mail!')
-        elif not pas or not repeat_pas:
+        if not pas or not repeat_pas:
             self.errors.setText('Введите пароль в оба поля!')
-        elif pas != repeat_pas:
+        if pas != repeat_pas:
             self.errors.setText('Пароли должны совпадать!')
 
     def check_login(self, login):
@@ -64,13 +65,13 @@ class RegWindow(QWidget):
         emails = self.cur.execute("""SELECT email FROM users""").fetchall()
         for i in emails:
             if email == i[0]:
-                return 3
+                return []
         if '@' not in email:
-            return 1
+            return 0
         elif not email.endswith('gmail.com') or not \
                 email.endswith('yandex.ru') or not email.endswith('icloud.com') or \
                 email.endswith('outlook.com'):
-            return 2
+            return ''
         return True
 
     def checking_password(self, password):

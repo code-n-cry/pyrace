@@ -27,7 +27,7 @@ class Menu:
                                   (0, 0, 0), (227, 66, 245), 0, 50, self.quit)
         self.shop_button = Button(10, 70, 132, 45, 'Магазин', screen, (66, 245, 206), (0, 0, 0), (227, 66, 245), 0, 46,
                                   self.shop)
-        self.garage_button = Button(10, 130, 150, 45, 'Ваш гараж', screen, (66, 245, 206), (0, 0, 0), (227, 66, 245), 0,
+        self.garage_button = Button(10, 130, 173, 45, 'Ваш гараж', screen, (66, 245, 206), (0, 0, 0), (227, 66, 245), 0,
                                     46, self.garage)
         # self.garage_buttom = Button()
         self.buttons = [self.start_button, self.quit_button, self.shop_button, self.garage_button]
