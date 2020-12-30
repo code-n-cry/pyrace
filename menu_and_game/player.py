@@ -51,7 +51,6 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = 450
 
     def update_image(self, choosen):
-        print(choosen)
         Player.image = pygame.image.load(self.path + f'\\menu_and_game\\game_data\\Car{choosen}.png')
         self.image = Player.image
         self.image.set_colorkey((255, 255, 255))

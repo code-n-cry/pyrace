@@ -27,30 +27,29 @@ class RegWindow(QWidget):
                 self.errors.setText('В логине не должно быть русских букв!')
             if not self.check_email(email):
                 if self.check_email(email) == 0:
-                    print(1)
                     self.errors.setText('Введите email корректно!')
                 if self.check_email(email) == '':
                     self.errors.setText('Введите существующий email!')
                 if self.check_email(email) == []:
                     self.errors.setText('Аккаунт, зарегистрированный на эту почту, уже существует!')
-            if not self.checking_password(pas):
-                self.errors.setText(self.checking_password(pas))
+            if self.checking_password(pas):
+                self.errors.setText(str(self.checking_password(pas)))
             else:
                 logins = [i[0] for i in self.cur.execute("""SELECT login FROM users""").fetchall()]
                 if login not in logins:
                     pas = ' '.join(format(ord(x), 'b') for x in pas)[::-1]
                     self.cur.execute("""INSERT INTO users  VALUES (?, ?, ?)""", (login, email, pas))
                     self.db.commit()
-                    self.hide()
+                    self.close()
                 else:
                     self.errors.setText('Пользователь с таким логином уже существует!')
-        if not login:
+        elif not login:
             self.errors.setText('Введите логин!')
-        if not email:
+        elif not email:
             self.errors.setText('Введите e-mail!')
-        if not pas or not repeat_pas:
+        elif not pas or not repeat_pas:
             self.errors.setText('Введите пароль в оба поля!')
-        if pas != repeat_pas:
+        elif pas != repeat_pas:
             self.errors.setText('Пароли должны совпадать!')
 
     def check_login(self, login):
@@ -68,8 +67,8 @@ class RegWindow(QWidget):
                 return []
         if '@' not in email:
             return 0
-        elif not email.endswith('gmail.com') or not \
-                email.endswith('yandex.ru') or not email.endswith('icloud.com') or \
+        if not email.endswith('gmail.com') and not \
+                email.endswith('yandex.ru') and not email.endswith('icloud.com') and \
                 email.endswith('outlook.com'):
             return ''
         return True
@@ -81,18 +80,15 @@ class RegWindow(QWidget):
         th_line = 'zxcvbnmячсмитьбю'
         fst_macline = 'asdfghjklфывапролджэё'
         pc_clava = fst_line + sec_line + th_line
-        try:
-            password = password.lower()
-            assert len(password) > 8
-            assert any([i in password for i in digits])
-            assert any([j in password for j in pc_clava])
-            for i in range(2, len(password)):
-                assert password[i - 2] + password[i - 1] + password[i] not in fst_line
-                assert password[i - 2] + password[i - 1] + password[i] not in sec_line
-                assert password[i - 2] + password[i - 1] + password[i] not in th_line
-                assert password[i - 2] + password[i - 1] + password[i] not in fst_macline
-                assert password[i - 2] + password[i - 1] + password[i] not in sec_line
-                assert password[i - 2] + password[i - 1] + password[i] not in th_line
-            return True
-        except Exception as e:
-            return e
+        password = password.lower()
+        if len(password) < 8:
+            return 'Длина пароля должа быть больше 8 символов!'
+        if not any([i in password for i in digits]) and not any([j in password for j in pc_clava]):
+            return 'В пароле должны быть и цифры, и буквы!'
+        for i in range(2, len(password)):
+            if password[i - 2] + password[i - 1] + password[i] in fst_line or \
+                    password[i - 2] + password[i - 1] + password[i] in sec_line or \
+                    password[i - 2] + password[i - 1] + password[i] in th_line or \
+                    password[i - 2] + password[i - 1] + password[i] in fst_macline:
+                return 'Не должно быть клавиатурных сочетаний из трёх букв!(Также на клавиатуре mac)'
+        return None
