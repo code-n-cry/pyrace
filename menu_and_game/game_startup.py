@@ -4,7 +4,7 @@ from player import Player
 from shop import Shop
 from road import Road
 from menu import Menu
-from game import Game
+from menu_and_game import Game
 from garage import Garage
 
 if __name__ == '__main__':
