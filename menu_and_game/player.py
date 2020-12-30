@@ -3,19 +3,18 @@ import os
 
 
 class Player(pygame.sprite.Sprite):
-    image = pygame.image.load('\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\Car1.png')
-    image.set_colorkey((255, 255, 255))
-
-    def __init__(self, group, coin_group, enemy_group=False, nitro_group=False):
+    def __init__(self, group, choosen_car=1):
         super().__init__(group)
+        self.path = '\\'.join(os.getcwd().split('\\')[:-1])
+        Player.image = pygame.image.load(self.path + f'\\menu_and_game\\game_data\\Car{choosen_car}.png')
         self.image = Player.image
+        self.image.set_colorkey((255, 255, 255))
         self.rect = self.image.get_rect()
         self.rect.x = 450
         self.rect.y = 580
         self.vx = 0
         self.vy = 0
         self.got_coins = 0
-        self.coin_group = coin_group
 
     def update(self, event):
         if event.type == pygame.KEYDOWN:
@@ -50,3 +49,12 @@ class Player(pygame.sprite.Sprite):
 
     def respawn(self):
         self.rect.x = 450
+
+    def update_image(self, choosen):
+        print(choosen)
+        Player.image = pygame.image.load(self.path + f'\\menu_and_game\\game_data\\Car{choosen}.png')
+        self.image = Player.image
+        self.image.set_colorkey((255, 255, 255))
+        self.rect = self.image.get_rect()
+        self.rect.x = 450
+        self.rect.y = 580

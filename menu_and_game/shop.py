@@ -5,7 +5,7 @@ from button import Button
 
 
 class Shop:
-    def __init__(self, surface, login):
+    def __init__(self, surface, login, garage):
         self.return_menu = False
         path_to_db = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\users_info.db'
         self.con = sqlite3.connect(path_to_db)
@@ -13,7 +13,7 @@ class Shop:
         data_str = cur.execute('SELECT data FROM info WHERE login=?', (login,)).fetchone()[0]
         cur.close()
         self.coins = int(data_str.split('_')[0][1:])
-        self.cars = [int(i) for i in data_str.split('_')[1:]]
+        self.cars = [int(i) for i in data_str.split('_')[1:-1]]
         self.bought_item = None
         self.surface = surface
         self.login = login
@@ -21,6 +21,7 @@ class Shop:
         self.buttons = []
         self.load_buttons()
         self.load_images()
+        self.garage = garage
 
     def load_images(self):
         path_to_img = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\'
@@ -31,8 +32,8 @@ class Shop:
             self.images.append(image)
 
     def load_buttons(self):
-        x, y = 135, 220
-        first_price = 10
+        x, y = self.surface.get_width() // 3 - 135, 220
+        first_price = 20
         for i in range(9):
             if self.cars[i] == 1:
                 b = Button(x - 25, y, 75, 30, 'Куплено', self.surface, (66, 245, 206), (0, 0, 0), (227, 66, 245), 0, 25,
@@ -74,29 +75,32 @@ class Shop:
                 else:
                     coins = '0' * 4
                 cars_for_db = '_'.join([str(i) for i in self.cars])
-                str_for_db = f'#{coins}_{cars_for_db}'
                 cur = self.con.cursor()
+                choosen_car = \
+                    cur.execute('SELECT data FROM info WHERE login=?', (self.login,)).fetchone()[0].split('_')[-1]
+                str_for_db = f'#{coins}_{cars_for_db}_{choosen_car}'
                 cur.execute('UPDATE info SET data=? WHERE login=?', (str_for_db, self.login))
                 self.con.commit()
                 cur.close()
+                self.garage.update_cars()
             else:
                 print('Недостаточно средств!')
         else:
             print('Вы уже купили эту машину!')
 
     def check_mouse_motion(self, pos):
-        for i in self.buttons:
-            i.check_mouse_motion(pos)
+        for btn in self.buttons:
+            btn.check_mouse_motion(pos)
 
     def check_mouse_down(self, pos):
-        for i in self.buttons:
-            i.check_mouse_down(pos)
-            if i.state == 'pressed':
-                self.bought_item = self.buttons.index(i)
+        for btn in self.buttons:
+            btn.check_mouse_down(pos)
+            if btn.state == 'pressed':
+                self.bought_item = self.buttons.index(btn)
 
     def check_mouse_up(self):
-        for i in self.buttons:
-            i.check_mouse_up()
+        for btn in self.buttons:
+            btn.check_mouse_up()
 
     def quit(self, event):
         if event.type == pygame.KEYDOWN:

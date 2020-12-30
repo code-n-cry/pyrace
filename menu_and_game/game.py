@@ -16,21 +16,23 @@ class Game:
         self.x_places = [94, 281, 500, 700]
 
     def render(self, event):
+        # self.enemy_group.update()
+        # self.enemy_group.draw(self.screen)
         self.player_group.update(event)
         self.coin_group.update(event)
         self.nitro_group.update(event)
-        #self.enemy_group.update()
         self.road.move()
         self.coin_group.draw(self.screen)
         self.nitro_group.draw(self.screen)
-        #self.enemy_group.draw(self.screen)
         self.player_group.draw(self.screen)
         if pygame.sprite.spritecollide(self.player, self.coin_group, True):
             self.player.got_coins += 1
+        if pygame.sprite.spritecollide(self.player, self.nitro_group, True):
+            pass
 
     def spawn(self):
         if self.chance(15):
-            return Coin(self.coin_group, random.choice(self.x_places), random.randrange(50, 350))
+            return Coin(self.coin_group, random.choice(self.x_places), random.randrange(50, 350), self.road)
         if self.chance(10):
             return Nitro(self.nitro_group, self.road, random.choice(self.x_places), random.randrange(50, 350))
 
@@ -38,3 +40,4 @@ class Game:
         if random.randint(0, 100) == need:
             return True
         return False
+
