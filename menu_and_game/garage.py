@@ -2,6 +2,7 @@ import os
 import sqlite3
 import pygame
 from button import Button
+from clickable_image import ClickableImage
 
 
 class Garage:
@@ -18,13 +19,16 @@ class Garage:
         self.update_cars()
 
     def load_images(self):
-        path = self.path + '\\game_data\\'
         images = []
+        x, y = 100, 40
         for i in self.cars:
-            image = pygame.image.load(path + f'Car{i}.png')
-            image = pygame.transform.flip(image, True, False)
-            image = pygame.transform.scale(image, (100, 170))
+            image = ClickableImage(x, y, f'Car{i}', self.surface)
             images.append(image)
+            if x < 600:
+                x += 250
+            else:
+                y += 270
+                x = 100
         return images
 
     def load_buttons(self):
@@ -61,6 +65,8 @@ class Garage:
             btn.check_mouse_down(pos)
             if btn.state == 'pressed':
                 self.choosen = self.buttons.index(btn)
+        for img in self.images:
+            img.check_mouse_down(pos)
 
     def check_mouse_up(self):
         for btn in self.buttons:
@@ -73,15 +79,8 @@ class Garage:
                 return True
 
     def render(self):
-        x, y = self.surface.get_width() // 3 - 170, 20
         for i in self.images:
-            self.surface.blit(i, (x, y))
-            self.buttons[self.images.index(i)].render()
-            if x < 500:
-                x += 250
-            else:
-                y += 270
-                x = 100
+            i.render()
         for btn in self.buttons:
             btn.render()
         self.change_text()

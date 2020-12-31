@@ -4,6 +4,7 @@ import sqlite3
 from tkinter import *
 from tkinter import messagebox
 from button import Button
+from clickable_image import ClickableImage
 
 
 class Shop:
@@ -27,12 +28,15 @@ class Shop:
         self.garage = garage
 
     def load_images(self):
-        path_to_img = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\'
+        x, y = 100, 40
         for i in range(1, 10):
-            image = pygame.image.load(path_to_img + f'Car{i}.png')
-            image = pygame.transform.flip(image, True, False)
-            image = pygame.transform.scale(image, (100, 170))
+            image = ClickableImage(x, y, f'Car{i}', self.surface)
             self.images.append(image)
+            if x < 600:
+                x += 250
+            else:
+                y += 270
+                x = 100
 
     def load_buttons(self):
         x, y = self.surface.get_width() // 3 - 135, 220
@@ -53,15 +57,9 @@ class Shop:
                 x = 135
 
     def render(self):
-        x, y = 100, 40
         for i in self.images:
-            self.surface .blit(i, (x, y))
+            i.render()
             self.buttons[self.images.index(i)].render()
-            if x < 600:
-                x += 250
-            else:
-                y += 270
-                x = 100
         self.render_text()
 
     def buy(self):
@@ -100,6 +98,8 @@ class Shop:
             btn.check_mouse_down(pos)
             if btn.state == 'pressed':
                 self.bought_item = self.buttons.index(btn)
+        for img in self.images:
+            img.check_mouse_down(pos)
 
     def check_mouse_up(self):
         for btn in self.buttons:
