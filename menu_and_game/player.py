@@ -17,7 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.got_coins = 0
 
     def update(self, event):
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.KEYDOWN: 
             if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                 if self.rect.x > 0:
                     self.vx = -3

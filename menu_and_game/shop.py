@@ -1,12 +1,15 @@
 import pygame
 import os
 import sqlite3
+from tkinter import *
+from tkinter import messagebox
 from button import Button
 
 
 class Shop:
     def __init__(self, surface, login, garage):
         self.return_menu = False
+        Tk().wm_withdraw()
         path_to_db = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\users_info.db'
         self.con = sqlite3.connect(path_to_db)
         cur = self.con.cursor()
@@ -52,7 +55,7 @@ class Shop:
     def render(self):
         x, y = 100, 40
         for i in self.images:
-            self.surface.blit(i, (x, y))
+            self.surface .blit(i, (x, y))
             self.buttons[self.images.index(i)].render()
             if x < 600:
                 x += 250
@@ -84,9 +87,9 @@ class Shop:
                 cur.close()
                 self.garage.update_cars()
             else:
-                print('Недостаточно средств!')
+                messagebox.showinfo('Низя :(', 'Недостаточно средств!')
         else:
-            print('Вы уже купили эту машину!')
+            messagebox.showinfo(':D', 'Вы уже купили данный автомобиль!')
 
     def check_mouse_motion(self, pos):
         for btn in self.buttons:
