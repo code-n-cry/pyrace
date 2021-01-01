@@ -19,5 +19,3 @@ class Coin(pygame.sprite.Sprite):
             self.rect.y += self.vy
         else:
             self.kill()
-
-

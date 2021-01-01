@@ -63,4 +63,3 @@ class Button:
         self.font = pygame.font.SysFont('Montserrat', tsize)
         x, y, w, h = coords
         self.bound = pygame.Rect(x, y, w, h)
-

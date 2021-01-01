@@ -18,3 +18,6 @@ class ClickableImage:
 
     def render(self):
         self.screen.blit(self.image, (self.bound.x, self.bound.y))
+
+    def get_name(self):
+        return self.str_img

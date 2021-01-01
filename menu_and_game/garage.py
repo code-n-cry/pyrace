@@ -75,7 +75,8 @@ class Garage:
     def quit(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                self.menu.choosen_car = self.choosen + 1
+                choosen_number = int(self.images[self.choosen].get_name()[-1])
+                self.menu.choosen_car = choosen_number
                 return True
 
     def render(self):
@@ -88,7 +89,8 @@ class Garage:
     def choose(self):
         cur = self.connect.cursor()
         last_data = cur.execute('SELECT data FROM info WHERE login=?', (self.login,)).fetchone()[0]
-        new_data = '_'.join(last_data.split('_')[:-1] + [str(self.choosen + 1)])
+        choosen_number = int(self.images[self.choosen].get_name()[-1])
+        new_data = '_'.join(last_data.split('_')[:-1] + [str(choosen_number)])
         cur.execute('UPDATE info SET data=? WHERE login=?', (new_data, self.login))
         self.connect.commit()
         cur.close()

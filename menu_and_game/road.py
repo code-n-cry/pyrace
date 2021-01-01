@@ -22,4 +22,3 @@ class Road:
         if self.pos >= 800:
             self.pos = 0
         return self.screen
-

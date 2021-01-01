@@ -1,4 +1,5 @@
 import sys
+import time
 import pygame
 from player import Player
 from shop import Shop
@@ -19,13 +20,14 @@ if __name__ == '__main__':
     all_sprites = pygame.sprite.Group()
     nitro_sprites = pygame.sprite.Group()
     coin_sprites = pygame.sprite.Group()
+    npc_sprites = pygame.sprite.Group()
     road = Road(screen)
     main_player = Player(all_sprites)
     main_menu = Menu(screen, background, all_sprites, road, main_player, str(sys.argv[1]))
     garage = Garage(screen, main_menu, main_menu.login)
     shop = Shop(screen, main_menu.login, garage)
     screen.blit(background, (0, 0))
-    game = Game(main_player, coin_sprites, nitro_sprites, False, all_sprites, road, screen)
+    game = Game(main_player, coin_sprites, nitro_sprites, npc_sprites, all_sprites, road, screen)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -66,6 +68,9 @@ if __name__ == '__main__':
         if main_menu.is_started and not main_menu.is_shopped and not main_menu.in_garage:
             game.spawn()
             game.render(event)
+            if game.is_nitro:
+                road.speed = 10
+            game.road.speed = 5
             main_menu.check_game_over(main_player, shop)
         if shop.quit(event):
             main_menu.is_shopped = False
