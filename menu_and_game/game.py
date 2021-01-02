@@ -7,7 +7,8 @@ from npc import Npc
 
 
 class Game:
-    def __init__(self, player, coin_group, nitro_group, enemy_group, player_group, road, surface):
+    def __init__(self, player, coin_group, nitro_group, enemy_group, player_group, road,
+                 surface):
         self.screen = surface
         self.player = player
         self.player_group = player_group
@@ -19,6 +20,7 @@ class Game:
         self.x_places = [94, 281, 500, 700]
         self.is_nitro = False
         self.do_spawn = True
+        self.nitro_time = []
 
     def render(self, event):
         # self.enemy_group.update()
@@ -39,6 +41,7 @@ class Game:
         if pygame.sprite.spritecollide(self.player, self.enemy_group, False):
             self.player.crashed = True
             self.stop()
+        self.check_nitro()
 
     def spawn(self):
         if self.do_spawn:
@@ -81,7 +84,24 @@ class Game:
         return False
 
     def nitro(self):
-        self.is_nitro = True
+        for coin in self.coin_group:
+            coin.vy += 10
+        for nitro in self.nitro_group:
+            nitro.speed += 10
+        self.speed += 10
+        self.road.speed += 10
+        self.nitro_time.append(time.time())
+
+    def check_nitro(self):
+        if self.nitro_time:
+            if time.time() - self.nitro_time[-1] >= 3:
+                for coin in self.coin_group:
+                    coin.vy -= 10
+                for nitro in self.nitro_group:
+                    nitro.speed -= 10
+                self.speed -= 10
+                self.road.speed -= 10
+                self.nitro_time.clear()
 
     def unstop(self):
         for car in self.enemy_group:
