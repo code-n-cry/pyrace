@@ -13,14 +13,14 @@ class Nitro(pygame.sprite.Sprite):
         self.rect.y = y
 
     def load_images(self):
-        images = ['/game_data/Car1.png']
+        images = []
         path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\'
-        # for i in range(1, 5):
-        #     images.append(path + f'nitro{i}.png')
+        for i in range(1, 5):
+            images.append(path + f'nitro{i}.png')
         return images
 
     def update(self, event):
         if self.rect.y < 750:
             self.rect.y += self.speed
         else:
-            self.rect.y = 60
+            self.kill()

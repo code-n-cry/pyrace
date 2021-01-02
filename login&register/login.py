@@ -37,6 +37,7 @@ class LoginWindow(QMainWindow):
                     directory = '/menu_and_game/game_startup.py'
                     way_to_menu_file = path + directory
                     subprocess.call(f'python {way_to_menu_file} {login}', shell=True)
+                    exit()
                 else:
                     self.error.setText('Неправильный пароль!')
             else:

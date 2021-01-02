@@ -25,22 +25,22 @@ class RegWindow(QWidget):
         if login and email and pas and repeat_pas and repeat_pas == pas:
             if not self.check_login(login):
                 self.errors.setText('В логине не должно быть русских букв!')
-            elif not self.check_email(email):
-                if self.check_email(email) == 1:
+            if not self.check_email(email):
+                if self.check_email(email) == 0:
                     self.errors.setText('Введите email корректно!')
-                if self.check_email(email) == 2:
+                if self.check_email(email) == '':
                     self.errors.setText('Введите существующий email!')
-                if self.check_email(email) == 3:
+                if self.check_email(email) == []:
                     self.errors.setText('Аккаунт, зарегистрированный на эту почту, уже существует!')
-            elif not self.checking_password(pas):
-                self.errors.setText(self.checking_password(pas))
+            if self.checking_password(pas):
+                self.errors.setText(str(self.checking_password(pas)))
             else:
                 logins = [i[0] for i in self.cur.execute("""SELECT login FROM users""").fetchall()]
                 if login not in logins:
                     pas = ' '.join(format(ord(x), 'b') for x in pas)[::-1]
                     self.cur.execute("""INSERT INTO users  VALUES (?, ?, ?)""", (login, email, pas))
                     self.db.commit()
-                    self.hide()
+                    self.close()
                 else:
                     self.errors.setText('Пользователь с таким логином уже существует!')
         elif not login:
@@ -64,13 +64,13 @@ class RegWindow(QWidget):
         emails = self.cur.execute("""SELECT email FROM users""").fetchall()
         for i in emails:
             if email == i[0]:
-                return 3
+                return []
         if '@' not in email:
-            return 1
-        elif not email.endswith('gmail.com') or not \
-                email.endswith('yandex.ru') or not email.endswith('icloud.com') or \
+            return 0
+        if not email.endswith('gmail.com') and not \
+                email.endswith('yandex.ru') and not email.endswith('icloud.com') and \
                 email.endswith('outlook.com'):
-            return 2
+            return ''
         return True
 
     def checking_password(self, password):
@@ -80,18 +80,15 @@ class RegWindow(QWidget):
         th_line = 'zxcvbnmячсмитьбю'
         fst_macline = 'asdfghjklфывапролджэё'
         pc_clava = fst_line + sec_line + th_line
-        try:
-            password = password.lower()
-            assert len(password) > 8
-            assert any([i in password for i in digits])
-            assert any([j in password for j in pc_clava])
-            for i in range(2, len(password)):
-                assert password[i - 2] + password[i - 1] + password[i] not in fst_line
-                assert password[i - 2] + password[i - 1] + password[i] not in sec_line
-                assert password[i - 2] + password[i - 1] + password[i] not in th_line
-                assert password[i - 2] + password[i - 1] + password[i] not in fst_macline
-                assert password[i - 2] + password[i - 1] + password[i] not in sec_line
-                assert password[i - 2] + password[i - 1] + password[i] not in th_line
-            return True
-        except Exception as e:
-            return e
+        password = password.lower()
+        if len(password) < 8:
+            return 'Длина пароля должа быть больше 8 символов!'
+        if not any([i in password for i in digits]) or not any([j in password for j in pc_clava]):
+            return 'В пароле должны быть и цифры, и буквы!'
+        for i in range(2, len(password)):
+            if password[i - 2] + password[i - 1] + password[i] in fst_line or \
+                    password[i - 2] + password[i - 1] + password[i] in sec_line or \
+                    password[i - 2] + password[i - 1] + password[i] in th_line or \
+                    password[i - 2] + password[i - 1] + password[i] in fst_macline:
+                return 'Не должно быть клавиатурных сочетаний из трёх букв!(Также на клавиатуре mac)'
+        return None
