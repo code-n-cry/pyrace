@@ -83,7 +83,7 @@ class RegWindow(QWidget):
         password = password.lower()
         if len(password) < 8:
             return 'Длина пароля должа быть больше 8 символов!'
-        if not any([i in password for i in digits]) and not any([j in password for j in pc_clava]):
+        if not any([i in password for i in digits]) or not any([j in password for j in pc_clava]):
             return 'В пароле должны быть и цифры, и буквы!'
         for i in range(2, len(password)):
             if password[i - 2] + password[i - 1] + password[i] in fst_line or \

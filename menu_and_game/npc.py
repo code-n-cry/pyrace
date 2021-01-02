@@ -14,17 +14,23 @@ class Npc(pygame.sprite.Sprite):
         self.rect.y = y
         self.check = False
         if self.rect.x < 200:
-            self.vy = 7
+            self.vy = 12
         else:
-            self.vy = -3
+            self.vy = -7
         if flipped:
             self.image = pygame.transform.flip(self.image, False, True)
 
     def update(self, event):
-        if 0 < self.rect.y < 750:
-            self.rect.y += self.vy
+        if self.rect.x < 200:
+            if self.rect.y < 920:
+                self.rect.y += self.vy
+            else:
+                self.kill()
         else:
-            self.kill()
+            if self.rect.y > -110:
+                self.rect.y += self.vy
+            else:
+                self.kill()
 
     def load_images(self):
         images = []

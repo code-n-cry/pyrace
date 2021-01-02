@@ -7,7 +7,7 @@ from button import Button
 
 
 class Menu:
-    def __init__(self, screen, background, all_sprites, road, player, user_login):
+    def __init__(self, screen, background, road, player, user_login):
         width, height = screen.get_size()
         path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game'
         self.con = sqlite3.connect(path + '\\game_data/users_info.db')
@@ -16,6 +16,7 @@ class Menu:
         self.con.commit()
         self.cars = 1
         self.login = user_login
+        self.game = None
         self.player = player
         logins = [i[0] for i in cur.execute('SELECT login FROM info').fetchall()]
         if user_login not in logins:
@@ -43,7 +44,6 @@ class Menu:
         self.sprites = pygame.sprite.Group(self.car)
         self.screen = screen
         self.background = background
-        self.all_sprites = all_sprites
         self.road = road
 
     def render(self):
@@ -70,6 +70,8 @@ class Menu:
         self.player.update_image(self.choosen_car)
         self.is_started = True
         self.music.stop()
+        self.game.restart()
+        self.game.unstop()
 
     def quit(self):
         exit()
@@ -83,7 +85,7 @@ class Menu:
         self.music.stop()
 
     def check_game_over(self, player, shop):
-        if player.check():
+        if player.check() or player.crashed:
             cur = self.con.cursor()
             data_str = cur.execute('SELECT data FROM info WHERE login=?', (self.login,)).fetchone()[0]
             coins = data_str[1:].split('_')[0]
@@ -95,6 +97,7 @@ class Menu:
             cur.close()
             player.got_coins = 0
             self.game_over = True
+            player.crashed = False
             self.game_over_text()
             shop.update_coins()
             return True
@@ -106,3 +109,6 @@ class Menu:
         text2 = font2.render('Нажмите "ESC" для перехода в главное меню', True, (255, 0, 0))
         self.screen.blit(text, (200, 300))
         self.screen.blit(text2, (83, 500))
+
+    def set_game_class(self, game):
+        self.game = game

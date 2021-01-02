@@ -1,5 +1,4 @@
 import sys
-import time
 import pygame
 from player import Player
 from shop import Shop
@@ -12,22 +11,24 @@ if __name__ == '__main__':
     fps = 60
     running = True
     pygame.init()
+    event = 0
     pygame.mixer.init()
     clock = pygame.time.Clock()
     size = width, height = 800, 800
     screen = pygame.display.set_mode(size, pygame.NOFRAME)
     background = pygame.Surface(screen.get_size())
-    all_sprites = pygame.sprite.Group()
+    player_sprites = pygame.sprite.Group()
     nitro_sprites = pygame.sprite.Group()
     coin_sprites = pygame.sprite.Group()
     npc_sprites = pygame.sprite.Group()
     road = Road(screen)
-    main_player = Player(all_sprites)
-    main_menu = Menu(screen, background, all_sprites, road, main_player, str(sys.argv[1]))
+    main_player = Player(player_sprites)
+    main_menu = Menu(screen, background, road, main_player, str(sys.argv[1]))
     garage = Garage(screen, main_menu, main_menu.login)
     shop = Shop(screen, main_menu.login, garage)
     screen.blit(background, (0, 0))
-    game = Game(main_player, coin_sprites, nitro_sprites, npc_sprites, all_sprites, road, screen)
+    game = Game(main_player, coin_sprites, nitro_sprites, npc_sprites, player_sprites, road, screen)
+    main_menu.set_game_class(game)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -35,7 +36,10 @@ if __name__ == '__main__':
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE and main_menu.game_over:
                     main_menu.is_started = False
+                    main_menu.game_over = False
                     main_player.respawn()
+                if event.key != pygame.K_ESCAPE and main_menu.game_over:
+                    main_menu.game_over_text()
             if event.type == pygame.MOUSEMOTION:
                 if not main_menu.is_started and not main_menu.is_shopped and not main_menu.in_garage:
                     main_menu.check_mouse_motion(event.pos)
