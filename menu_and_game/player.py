@@ -1,5 +1,6 @@
 import pygame
 import os
+import json
 
 
 class Player(pygame.sprite.Sprite):
@@ -18,6 +19,7 @@ class Player(pygame.sprite.Sprite):
         self.got_coins = 0
         self.crashed = False
         self.can_move = True
+        self.bg_time = 0
 
     def update(self, event):
         if self.can_move:
@@ -55,17 +57,19 @@ class Player(pygame.sprite.Sprite):
 
     def set_speed(self):
         need_data = None
-        with open(self.path + '\\menu_and_game\\menu_data\\data.txt', encoding='utf-8') as data:
-            all_data = data.read().split('\n')
-        for i in all_data:
-            if i.split(':')[0] == self.img_name:
+        with open(self.path + '\\menu_and_game\\game_data\\cars.json', encoding='utf-8') as data:
+            all_data = json.load(data)
+        for i in all_data['cars']:
+            if i['id'] == self.img_name:
                 need_data = i
-        speed = int(need_data.split(':')[1].split(',')[1])
+        speed = need_data['speed']
         return speed
 
     def check(self):
         if 0 <= self.rect.x <= 690:
             return False
+        else:
+            self.can_move = False
         return True
 
     def respawn(self):

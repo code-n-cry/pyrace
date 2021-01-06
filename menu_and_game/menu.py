@@ -22,14 +22,14 @@ class Menu:
         if user_login not in logins:
             cur.execute('INSERT INTO info VALUES(?, ?)', (user_login, '#0000_1_0_0_0_0_0_0_0_0_1'))
             self.con.commit()
-        self.start_button = Button(10, 10, 132, 50, 'Играть', screen, (66, 245, 206), (0, 0, 0), (227, 66, 245), 0, 55,
-                                   self.start_game)
+        self.start_button = Button(10, 10, 132, 50, 'Играть', screen, (66, 245, 206), (255, 204, 0), (227, 66, 245),
+                                   1, 55, self.start_game)
         self.quit_button = Button(width - 142, 10, 132, 45, 'Выход', screen, (66, 245, 206),
-                                  (0, 0, 0), (227, 66, 245), 0, 50, self.quit)
-        self.shop_button = Button(10, 70, 132, 45, 'Магазин', screen, (66, 245, 206), (0, 0, 0), (227, 66, 245), 0, 46,
-                                  self.shop)
-        self.garage_button = Button(10, 130, 173, 45, 'Ваш гараж', screen, (66, 245, 206), (0, 0, 0), (227, 66, 245), 0,
-                                    46, self.garage)
+                                  (255, 204, 0), (227, 66, 245), 1, 50, self.quit)
+        self.shop_button = Button(10, 70, 132, 45, 'Магазин', screen, (66, 245, 206), (255, 204, 0), (227, 66, 245),
+                                  1, 46, self.shop)
+        self.garage_button = Button(10, 130, 173, 45, 'Ваш гараж', screen, (66, 245, 206), (255, 204, 0),
+                                    (227, 66, 245), 1, 46, self.garage)
         # self.garage_buttom = Button()
         self.buttons = [self.start_button, self.quit_button, self.shop_button, self.garage_button]
         self.is_started = False
