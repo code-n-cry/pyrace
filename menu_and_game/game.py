@@ -23,7 +23,7 @@ class Game:
         self.do_spawn = True
         self.nitro_time = []
         self.do_timer = True
-        self.ticks = 0
+        self.bg_time = time.time()
 
     def render(self, event):
         # self.enemy_group.update()
@@ -45,16 +45,17 @@ class Game:
         if pygame.sprite.spritecollide(self.player, self.enemy_group, False):
             self.player.crashed = True
             self.stop()
+        if self.player.rect.x <= 0 or self.player.rect.x >= 700:
+            self.player.crashed = True
+            self.stop()
         self.check_nitro()
-        self.timer(self.do_timer, self.ticks)
+        self.timer(self.do_timer)
 
-    def timer(self, do, ticks):
+    def timer(self, do):
         if do:
             font = pygame.freetype.SysFont(None, 34)
             font.origin = True
-            seconds = int(ticks / 1000 % 60)
-            minutes = int(ticks / 60000 % 24)
-            out = '{minutes:02d}:{seconds:02d}'.format(minutes=minutes, seconds=seconds)
+            out = str(round(time.time() - self.bg_time, 2))
             font.render_to(self.screen, (10, 100), out, pygame.Color('dodgerblue'))
 
     def spawn(self):
@@ -84,6 +85,9 @@ class Game:
                     npc = Npc(predv_group_npc, x, y, False)
                 if self.check(npc):
                     self.enemy_group.add(npc)
+            if self.player.bg_time == 0:
+                self.bg_time = time.time()
+                self.player.bg_time = 1
 
     def chance(self, need):
         if random.randint(0, 100) == need:
@@ -144,6 +148,7 @@ class Game:
         self.do_timer = False
         self.player.can_move = False
         self.nitro_time.clear()
+        self.bg_time = time.time()
 
     def restart(self):
         self.do_spawn = True

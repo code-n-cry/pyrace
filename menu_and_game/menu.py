@@ -96,6 +96,7 @@ class Menu:
             self.con.commit()
             cur.close()
             player.got_coins = 0
+            self.player.bg_time = 0
             self.game_over = True
             player.crashed = False
             self.game_over_text()

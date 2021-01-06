@@ -18,6 +18,7 @@ class Player(pygame.sprite.Sprite):
         self.got_coins = 0
         self.crashed = False
         self.can_move = True
+        self.bg_time = 0
 
     def update(self, event):
         if self.can_move:
