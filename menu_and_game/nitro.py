@@ -20,7 +20,7 @@ class Nitro(pygame.sprite.Sprite):
         return images
 
     def update(self, event):
-        if self.rect.y < 750:
+        if self.rect.y < 850:
             self.rect.y += self.speed
         else:
             self.kill()

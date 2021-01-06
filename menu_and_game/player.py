@@ -17,40 +17,41 @@ class Player(pygame.sprite.Sprite):
         self.vy = 0
         self.got_coins = 0
         self.crashed = False
+        self.can_move = True
 
     def update(self, event):
-        if event.type == pygame.KEYDOWN:
-            try:
+        if self.can_move:
+            if event.type == pygame.KEYDOWN:
+                try:
+                    if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                        if self.rect.x > 0:
+                            self.vx = -self.set_speed()
+                            self.image = pygame.transform.rotate(Player.image, 30)
+                            self.image = pygame.transform.scale(self.image, (140, 200))
+                            self.image.set_colorkey((255, 255, 255))
+                    elif event.key == pygame.K_RIGHT or event.KEY == pygame.K_d:
+                        if self.rect.x < 800 - self.rect.width:
+                            self.vx = self.set_speed()
+                            self.image = pygame.transform.rotate(Player.image, 330)
+                            self.image = pygame.transform.scale(self.image, (140, 200))
+                            self.image.set_colorkey((255, 255, 255))
+                    else:
+                        self.vx = 0
+                    if not self.check():
+                        self.rect.x += self.vx
+                except AttributeError:
+                    pass
+            if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     if self.rect.x > 0:
-                        self.vx = -self.set_speed()
-                        self.image = pygame.transform.rotate(Player.image, 30)
-                        self.image = pygame.transform.scale(self.image, (140, 200))
+                        self.image = Player.image
                         self.image.set_colorkey((255, 255, 255))
-                elif event.key == pygame.K_RIGHT or event.KEY == pygame.K_d:
+                        self.image = pygame.transform.scale(self.image, (100, 180))
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     if self.rect.x < 800 - self.rect.width:
-                        self.vx = self.set_speed()
-                        self.image = pygame.transform.rotate(Player.image, 330)
-                        self.image = pygame.transform.scale(self.image, (140, 200))
+                        self.image = Player.image
+                        self.image = pygame.transform.scale(self.image, (100, 180))
                         self.image.set_colorkey((255, 255, 255))
-
-                else:
-                    self.vx = 0
-                if not self.check():
-                    self.rect.x += self.vx
-            except AttributeError:
-                pass
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                if self.rect.x > 0:
-                    self.image = Player.image
-                    self.image.set_colorkey((255, 255, 255))
-                    self.image = pygame.transform.scale(self.image, (100, 180))
-            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                if self.rect.x < 800 - self.rect.width:
-                    self.image = Player.image
-                    self.image = pygame.transform.scale(self.image, (100, 180))
-                    self.image.set_colorkey((255, 255, 255))
 
     def set_speed(self):
         need_data = None

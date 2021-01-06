@@ -3,6 +3,7 @@ from coin import Coin
 from nitro import Nitro
 import time
 import pygame
+import pygame.freetype
 from npc import Npc
 
 
@@ -21,10 +22,13 @@ class Game:
         self.is_nitro = False
         self.do_spawn = True
         self.nitro_time = []
+        self.do_timer = True
+        self.ticks = 0
 
     def render(self, event):
         # self.enemy_group.update()
         # self.enemy_group.draw(self.screen)
+        self.ticks = pygame.time.get_ticks()
         self.player_group.update(event)
         self.coin_group.update(event)
         self.nitro_group.update(event)
@@ -42,6 +46,16 @@ class Game:
             self.player.crashed = True
             self.stop()
         self.check_nitro()
+        self.timer(self.do_timer, self.ticks)
+
+    def timer(self, do, ticks):
+        if do:
+            font = pygame.freetype.SysFont(None, 34)
+            font.origin = True
+            seconds = int(ticks / 1000 % 60)
+            minutes = int(ticks / 60000 % 24)
+            out = '{minutes:02d}:{seconds:02d}'.format(minutes=minutes, seconds=seconds)
+            font.render_to(self.screen, (10, 100), out, pygame.Color('dodgerblue'))
 
     def spawn(self):
         if self.do_spawn:
@@ -115,6 +129,8 @@ class Game:
             nitro.speed = 5
         self.speed = 5
         self.do_spawn = True
+        self.do_timer = True
+        self.player.can_move = True
 
     def stop(self):
         for car in self.enemy_group:
@@ -125,9 +141,14 @@ class Game:
             nitro.speed = 0
         self.speed = 0
         self.do_spawn = False
+        self.do_timer = False
+        self.player.can_move = False
+        self.nitro_time.clear()
 
     def restart(self):
         self.do_spawn = True
+        self.do_timer = True
+        self.player.can_move = True
         self.coin_group.empty()
         self.nitro_group.empty()
         self.enemy_group.empty()
