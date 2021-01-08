@@ -5,6 +5,7 @@ import time
 import pygame
 import pygame.freetype
 from npc import Npc
+from record import Record
 
 
 class Game:
@@ -17,6 +18,7 @@ class Game:
         self.nitro_group = nitro_group
         self.enemy_group = enemy_group
         self.road = road
+        self.record = Record()
         self.speed = 5
         self.x_places = [94, 281, 500, 700]
         self.is_nitro = False
@@ -44,9 +46,11 @@ class Game:
             self.nitro()
         if pygame.sprite.spritecollide(self.player, self.enemy_group, False):
             self.player.crashed = True
+            self.record.add_record(round(time.time() - self.bg_time, 2))
             self.stop()
         if self.player.rect.x <= 0 or self.player.rect.x >= 700:
             self.player.crashed = True
+            self.record.add_record(round(time.time() - self.bg_time, 2))
             self.stop()
         self.check_nitro()
         self.timer(self.do_timer)
@@ -151,6 +155,9 @@ class Game:
         self.bg_time = time.time()
 
     def restart(self):
+        self.record.col = 2
+        self.record.col -= 1
+        print(self.record.read_records())
         self.do_spawn = True
         self.do_timer = True
         self.player.can_move = True
