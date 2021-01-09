@@ -1,4 +1,5 @@
 import sys
+import os
 import pygame
 from player import Player
 from shop import Shop
@@ -6,12 +7,17 @@ from road import Road
 from menu import Menu
 from game import Game
 from garage import Garage
+from roads import choose_roads
 
 if __name__ == '__main__':
+    """Файл для запуска всей игры(меню, короче все файлы)"""
+
     fps = 60
+    path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\'
     running = True
     pygame.init()
     event = 0
+    pygame.mixer.pre_init(44100, -16, 2, 2048)
     pygame.mixer.init()
     clock = pygame.time.Clock()
     size = width, height = 800, 800
@@ -21,13 +27,14 @@ if __name__ == '__main__':
     nitro_sprites = pygame.sprite.Group()
     coin_sprites = pygame.sprite.Group()
     npc_sprites = pygame.sprite.Group()
-    road = Road(screen)
+    road = Road(screen, path + f'{choose_roads()}.jpg')
     main_player = Player(player_sprites)
     main_menu = Menu(screen, background, road, main_player, str(sys.argv[0]))
     garage = Garage(screen, main_menu, main_menu.login)
     shop = Shop(screen, main_menu.login, garage)
     screen.blit(background, (0, 0))
-    game = Game(main_player, coin_sprites, nitro_sprites, npc_sprites, player_sprites, road, screen)
+    game = Game(main_player, coin_sprites, nitro_sprites, npc_sprites, player_sprites,
+                road, screen, str(sys.argv[1]))
     main_menu.set_game_class(game)
     while running:
         for event in pygame.event.get():

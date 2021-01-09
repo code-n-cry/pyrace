@@ -4,6 +4,7 @@ import random
 
 
 class Nitro(pygame.sprite.Sprite):
+    """Нитро(ускорение). Класс отвечает за выбор случайной картинки для спрайта и движение"""
     def __init__(self, group, road, x, y):
         super().__init__(group)
         self.speed = road.speed

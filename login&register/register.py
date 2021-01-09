@@ -6,6 +6,8 @@ import sqlite3
 
 
 class RegWindow(QWidget):
+    """Окно регистрации"""
+
     def __init__(self, parent=None):
         super(RegWindow, self).__init__(parent, Qt.Window)
         uic.loadUi('data/Reg.ui', self)
@@ -17,6 +19,8 @@ class RegWindow(QWidget):
         self.pasEdit2.setEchoMode(QLineEdit.Password)
 
     def reg(self):
+        """Проверка всех данных"""
+
         self.errors.clear()
         login = self.logEdit.text()
         email = self.mailEdit.text()
@@ -31,14 +35,17 @@ class RegWindow(QWidget):
                 if self.check_email(email) == '':
                     self.errors.setText('Введите существующий email!')
                 if self.check_email(email) == []:
-                    self.errors.setText('Аккаунт, зарегистрированный на эту почту, уже существует!')
+                    self.errors.setText(
+                        'Аккаунт, зарегистрированный на эту почту, уже существует!')
             if self.checking_password(pas):
                 self.errors.setText(str(self.checking_password(pas)))
             else:
-                logins = [i[0] for i in self.cur.execute("""SELECT login FROM users""").fetchall()]
+                logins = [i[0] for i in
+                          self.cur.execute("""SELECT login FROM users""").fetchall()]
                 if login not in logins:
                     pas = ' '.join(format(ord(x), 'b') for x in pas)[::-1]
-                    self.cur.execute("""INSERT INTO users  VALUES (?, ?, ?)""", (login, email, pas))
+                    self.cur.execute("""INSERT INTO users  VALUES (?, ?, ?)""",
+                                     (login, email, pas))
                     self.db.commit()
                     self.close()
                 else:
@@ -53,6 +60,8 @@ class RegWindow(QWidget):
             self.errors.setText('Пароли должны совпадать!')
 
     def check_login(self, login):
+        """Логин не должен быть в базе данных(условие в функции check) и должен быть из некириллических символов"""
+
         login = login.lower()
         cyrillic = 'йцукенгшщзхъёфывапролджэячсмитьбю'
         for i in cyrillic:
@@ -61,6 +70,8 @@ class RegWindow(QWidget):
         return True
 
     def check_email(self, email):
+        """Проверка email производится по наличию символа '@' и  правильному сервису почты"""
+
         emails = self.cur.execute("""SELECT email FROM users""").fetchall()
         for i in emails:
             if email == i[0]:
@@ -74,6 +85,9 @@ class RegWindow(QWidget):
         return True
 
     def checking_password(self, password):
+        """Проверка пароля производится по длине(>=8), наличию цифр и букв,
+        отсутствию трёхзначных сочетаний с клавиатуры в пароле"""
+
         digits = '1234567890'
         fst_line = 'qwertyuiopйцукенгшщзхъ'
         sec_line = 'asdfghjklфывапролджэ'
@@ -83,12 +97,14 @@ class RegWindow(QWidget):
         password = password.lower()
         if len(password) < 8:
             return 'Длина пароля должа быть больше 8 символов!'
-        if not any([i in password for i in digits]) or not any([j in password for j in pc_clava]):
+        if not any([i in password for i in digits]) or not any(
+                [j in password for j in pc_clava]):
             return 'В пароле должны быть и цифры, и буквы!'
         for i in range(2, len(password)):
             if password[i - 2] + password[i - 1] + password[i] in fst_line or \
                     password[i - 2] + password[i - 1] + password[i] in sec_line or \
                     password[i - 2] + password[i - 1] + password[i] in th_line or \
                     password[i - 2] + password[i - 1] + password[i] in fst_macline:
-                return 'Не должно быть клавиатурных сочетаний из трёх букв!(Также на клавиатуре mac)'
+                return 'Не должно быть клавиатурных сочетаний из трёх букв!(Также на ' \
+                       'клавиатуре mac) '
         return None

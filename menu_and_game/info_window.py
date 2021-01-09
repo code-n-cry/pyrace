@@ -3,9 +3,12 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPixmap, QIcon
 import os
 import sys
+import json
 
 
 class InfoWindow(QMainWindow):
+    """Информация о машине(изображения, название, скорость, цена)"""
+
     def __init__(self, image):
         super().__init__()
         self.path = '\\'.join(os.getcwd().split('\\')[:-1])
@@ -21,14 +24,14 @@ class InfoWindow(QMainWindow):
 
     def load_data(self):
         need_data = None
-        with open(self.path + '\\menu_and_game\\menu_data\\data.txt', encoding='utf-8') as data:
-            all_data = data.read().split('\n')
-        for i in all_data:
-            if i.split(':')[0] == self.str_img:
+        with open(self.path + '\\menu_and_game\\game_data\\cars.json', encoding='utf-8') as data:
+            all_data = json.load(data)
+        for i in all_data['cars']:
+            if i['id'] == self.str_img:
                 need_data = i
-        self.name_label.setText(need_data.split(':')[1].split(',')[0][2:-1])
-        self.speed_label.setText(need_data.split(':')[1].split(',')[1])
-        self.price_label.setText(need_data.split(':')[1].split(',')[2])
+        self.name_label.setText(need_data['name'])
+        self.speed_label.setText(str(need_data['speed']))
+        self.price_label.setText(str(need_data['price']))
 
     def quit(self):
         self.close()

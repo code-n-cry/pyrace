@@ -1,15 +1,22 @@
 import random
-from coin import Coin
-from nitro import Nitro
+import os
 import time
 import pygame
 import pygame.freetype
+from coin import Coin
+from nitro import Nitro
 from npc import Npc
+from record import Record
 
 
 class Game:
-    def __init__(self, player, coin_group, nitro_group, enemy_group, player_group, road,
-                 surface):
+    """Класс, отвечающий за все процессы, происходящие во время игры. Обрабатывает пересечения объектов,
+    отвечает за их спавн, а также за рендер на экране"""
+
+    def __init__(self, player, coin_group, nitro_group, enemy_group, player_group, road, surface, login):
+        self.ticks = 0
+        self.speed = 5
+        self.bg_time = time.time()
         self.screen = surface
         self.player = player
         self.player_group = player_group
@@ -17,17 +24,19 @@ class Game:
         self.nitro_group = nitro_group
         self.enemy_group = enemy_group
         self.road = road
-        self.speed = 5
+        self.login = login
+        self.record = Record()
+        self.path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\'
+        self.music_defeat = pygame.mixer.Sound(self.path + '\\game_data\\defeat.ogg')
+        self.music_coin = pygame.mixer.Sound(self.path + '\\game_data\\coin.ogg')
+        self.music_nitro = pygame.mixer.Sound(self.path + '\\game_data\\nitro.ogg')
         self.x_places = [94, 281, 500, 700]
-        self.is_nitro = False
-        self.do_spawn = True
         self.nitro_time = []
         self.do_timer = True
-        self.bg_time = time.time()
+        self.is_nitro = False
+        self.do_spawn = True
 
     def render(self, event):
-        # self.enemy_group.update()
-        # self.enemy_group.draw(self.screen)
         self.ticks = pygame.time.get_ticks()
         self.player_group.update(event)
         self.coin_group.update(event)
@@ -40,23 +49,30 @@ class Game:
         self.enemy_group.draw(self.screen)
         if pygame.sprite.spritecollide(self.player, self.coin_group, True):
             self.player.got_coins += 1
+            self.music_coin.play()
         if pygame.sprite.spritecollide(self.player, self.nitro_group, True):
             self.nitro()
+            self.music_nitro.play()
         if pygame.sprite.spritecollide(self.player, self.enemy_group, False):
             self.player.crashed = True
-            self.stop()
+            self.record.add_record(round(time.time() - self.bg_time, 2), self.login,
+                                   self.music_defeat)
+            self.stop()  # При столкновении с врагом записываем в БД время поездки, останавливаем игру.
         if self.player.rect.x <= 0 or self.player.rect.x >= 700:
             self.player.crashed = True
+            self.record.add_record(round(time.time() - self.bg_time, 2), self.login,
+                                   self.music_defeat)
             self.stop()
         self.check_nitro()
         self.timer(self.do_timer)
 
     def timer(self, do):
+        """Функция для отображения времени поездки"""
         if do:
             font = pygame.freetype.SysFont(None, 34)
             font.origin = True
             out = str(round(time.time() - self.bg_time, 2))
-            font.render_to(self.screen, (10, 100), out, pygame.Color('dodgerblue'))
+            font.render_to(self.screen, (700, 760), out, pygame.Color('dodgerblue'))
 
     def spawn(self):
         if self.do_spawn:
@@ -102,6 +118,7 @@ class Game:
         return False
 
     def nitro(self):
+        """Ускорение(нитро - окись азота, использующаяся для увелечения характеристик двигателя)"""
         for coin in self.coin_group:
             coin.vy += 10
         for nitro in self.nitro_group:
@@ -151,6 +168,8 @@ class Game:
         self.bg_time = time.time()
 
     def restart(self):
+        self.record.col = 2
+        self.record.col -= 1
         self.do_spawn = True
         self.do_timer = True
         self.player.can_move = True
