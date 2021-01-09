@@ -6,11 +6,15 @@ import pygame
 import pygame.freetype
 from npc import Npc
 from record import Record
+import os
 
 
 class Game:
     def __init__(self, player, coin_group, nitro_group, enemy_group, player_group, road,
-                 surface):
+                 surface, login):
+        self.ticks = 0
+        self.speed = 5
+        self.bg_time = time.time()
         self.screen = surface
         self.player = player
         self.player_group = player_group
@@ -18,15 +22,17 @@ class Game:
         self.nitro_group = nitro_group
         self.enemy_group = enemy_group
         self.road = road
+        self.login = login
         self.record = Record()
-        self.speed = 5
+        self.path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\'
+        self.music_defeat = pygame.mixer.Sound(self.path + '\\game_data\\defeat.ogg')
+        self.music_coin = pygame.mixer.Sound(self.path + '\\game_data\\coin.ogg')
+        self.music_nitro = pygame.mixer.Sound(self.path + '\\game_data\\nitro.ogg')
         self.x_places = [94, 281, 500, 700]
-        self.is_nitro = False
-        self.do_spawn = True
         self.nitro_time = []
         self.do_timer = True
-        self.bg_time = time.time()
-        self.ticks = 0
+        self.is_nitro = False
+        self.do_spawn = True
 
     def render(self, event):
         self.ticks = pygame.time.get_ticks()
@@ -41,21 +47,19 @@ class Game:
         self.enemy_group.draw(self.screen)
         if pygame.sprite.spritecollide(self.player, self.coin_group, True):
             self.player.got_coins += 1
+            self.music_coin.play()
         if pygame.sprite.spritecollide(self.player, self.nitro_group, True):
             self.nitro()
+            self.music_nitro.play()
         if pygame.sprite.spritecollide(self.player, self.enemy_group, False):
             self.player.crashed = True
-            all_data = self.record.read_records()
-            if len(all_data) > 5:
-                score_id = self.record.get_id(min(all_data))
-                self.record.clear_records(score_id)
-                self.record.add_record(round(time.time() - self.bg_time, 2))
-            else:
-                self.record.add_record(round(time.time() - self.bg_time, 2))
+            self.record.add_record(round(time.time() - self.bg_time, 2), self.login,
+                                   self.music_defeat)
             self.stop()
         if self.player.rect.x <= 0 or self.player.rect.x >= 700:
             self.player.crashed = True
-            self.record.add_record(round(time.time() - self.bg_time, 2))
+            self.record.add_record(round(time.time() - self.bg_time, 2), self.login,
+                                   self.music_defeat)
             self.stop()
         self.check_nitro()
         self.timer(self.do_timer)
@@ -65,20 +69,20 @@ class Game:
             font = pygame.freetype.SysFont(None, 34)
             font.origin = True
             out = str(round(time.time() - self.bg_time, 2))
-            font.render_to(self.screen, (10, 100), out, pygame.Color('dodgerblue'))
+            font.render_to(self.screen, (700, 760), out, pygame.Color('dodgerblue'))
 
     def spawn(self):
         if self.do_spawn:
-            previously_group_coins = pygame.sprite.Group()
-            previously_group_nitro = pygame.sprite.Group()
-            previously_group_npc = pygame.sprite.Group()
+            predv_group_coins = pygame.sprite.Group()
+            predv_group_nitro = pygame.sprite.Group()
+            predv_group_npc = pygame.sprite.Group()
             if self.chance(15):
-                coin = Coin(previously_group_coins, random.choice(
+                coin = Coin(predv_group_coins, random.choice(
                     self.x_places), random.randrange(50, 350), self.road)
                 if self.check(coin):
                     self.coin_group.add(coin)
             if self.chance(3):
-                nitro = Nitro(previously_group_nitro, self.road, random.choice(
+                nitro = Nitro(predv_group_nitro, self.road, random.choice(
                     self.x_places), random.randrange(50, 350))
                 if self.check(nitro):
                     self.nitro_group.add(nitro)
@@ -87,11 +91,11 @@ class Game:
                 if self.x_places[0] <= x <= self.x_places[1]:
                     x -= random.randrange(60, 90)
                     y = random.randrange(-150, -110)
-                    npc = Npc(previously_group_npc, x, y, True)
+                    npc = Npc(predv_group_npc, x, y, True)
                 else:
                     x -= random.randrange(60, 90)
                     y = random.randrange(890, 990)
-                    npc = Npc(previously_group_npc, x, y, False)
+                    npc = Npc(predv_group_npc, x, y, False)
                 if self.check(npc):
                     self.enemy_group.add(npc)
             if self.player.bg_time == 0:
@@ -162,7 +166,6 @@ class Game:
     def restart(self):
         self.record.col = 2
         self.record.col -= 1
-        print(self.record.read_records())
         self.do_spawn = True
         self.do_timer = True
         self.player.can_move = True

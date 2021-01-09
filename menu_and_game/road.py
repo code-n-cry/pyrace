@@ -1,14 +1,10 @@
 import pygame
-import os
-
-road_default = pygame.image.load(
-    '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\road.jpg')
-road_default = pygame.transform.scale(road_default, (800, 800))
 
 
 class Road:
-    def __init__(self, screen):
-        self.image = road_default
+    def __init__(self, screen, image):
+        self.image = pygame.image.load(image)
+        self.image = pygame.transform.scale(self.image, (800, 800))
         self.pos = 0
         self.screen = screen
         self.screen.fill((0, 0, 0))

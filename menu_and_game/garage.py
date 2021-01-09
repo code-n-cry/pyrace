@@ -76,7 +76,6 @@ class Garage:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE and self.menu.in_garage:
                 self.menu.in_garage = False
-                print(self.choosen)
                 choosen_number = int(self.images[self.choosen].get_name()[-1])
                 self.menu.choosen_car = choosen_number
                 return True

@@ -31,14 +31,17 @@ class RegWindow(QWidget):
                 if self.check_email(email) == '':
                     self.errors.setText('Введите существующий email!')
                 if self.check_email(email) == []:
-                    self.errors.setText('Аккаунт, зарегистрированный на эту почту, уже существует!')
+                    self.errors.setText(
+                        'Аккаунт, зарегистрированный на эту почту, уже существует!')
             if self.checking_password(pas):
                 self.errors.setText(str(self.checking_password(pas)))
             else:
-                logins = [i[0] for i in self.cur.execute("""SELECT login FROM users""").fetchall()]
+                logins = [i[0] for i in
+                          self.cur.execute("""SELECT login FROM users""").fetchall()]
                 if login not in logins:
                     pas = ' '.join(format(ord(x), 'b') for x in pas)[::-1]
-                    self.cur.execute("""INSERT INTO users  VALUES (?, ?, ?)""", (login, email, pas))
+                    self.cur.execute("""INSERT INTO users  VALUES (?, ?, ?)""",
+                                     (login, email, pas))
                     self.db.commit()
                     self.close()
                 else:
@@ -83,12 +86,14 @@ class RegWindow(QWidget):
         password = password.lower()
         if len(password) < 8:
             return 'Длина пароля должа быть больше 8 символов!'
-        if not any([i in password for i in digits]) or not any([j in password for j in pc_clava]):
+        if not any([i in password for i in digits]) or not any(
+                [j in password for j in pc_clava]):
             return 'В пароле должны быть и цифры, и буквы!'
         for i in range(2, len(password)):
             if password[i - 2] + password[i - 1] + password[i] in fst_line or \
                     password[i - 2] + password[i - 1] + password[i] in sec_line or \
                     password[i - 2] + password[i - 1] + password[i] in th_line or \
                     password[i - 2] + password[i - 1] + password[i] in fst_macline:
-                return 'Не должно быть клавиатурных сочетаний из трёх букв!(Также на клавиатуре mac)'
+                return 'Не должно быть клавиатурных сочетаний из трёх букв!(Также на ' \
+                       'клавиатуре mac) '
         return None
