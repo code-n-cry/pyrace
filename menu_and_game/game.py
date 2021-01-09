@@ -6,20 +6,26 @@ import pygame
 import pygame.freetype
 from npc import Npc
 from record import Record
+import os
 
 
 class Game:
     def __init__(self, player, coin_group, nitro_group, enemy_group, player_group, road,
-                 surface):
+                 surface, login):
         self.screen = surface
         self.player = player
+        self.path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\'
         self.player_group = player_group
         self.coin_group = coin_group
         self.nitro_group = nitro_group
         self.enemy_group = enemy_group
         self.road = road
+        self.login = login
         self.record = Record()
         self.speed = 5
+        self.music_defeat = pygame.mixer.Sound(self.path + '\\game_data\\defeat.ogg')
+        self.music_coin = pygame.mixer.Sound(self.path + '\\game_data\\coin.ogg')
+        self.music_nitro = pygame.mixer.Sound(self.path + '\\game_data\\nitro.ogg')
         self.x_places = [94, 281, 500, 700]
         self.is_nitro = False
         self.do_spawn = True
@@ -42,15 +48,19 @@ class Game:
         self.enemy_group.draw(self.screen)
         if pygame.sprite.spritecollide(self.player, self.coin_group, True):
             self.player.got_coins += 1
+            self.music_coin.play()
         if pygame.sprite.spritecollide(self.player, self.nitro_group, True):
             self.nitro()
+            self.music_nitro.play()
         if pygame.sprite.spritecollide(self.player, self.enemy_group, False):
             self.player.crashed = True
-            self.record.add_record(round(time.time() - self.bg_time, 2))
+            self.record.add_record(round(time.time() - self.bg_time, 2), self.login,
+                                   self.music_defeat)
             self.stop()
         if self.player.rect.x <= 0 or self.player.rect.x >= 700:
             self.player.crashed = True
-            self.record.add_record(round(time.time() - self.bg_time, 2))
+            self.record.add_record(round(time.time() - self.bg_time, 2), self.login,
+                                   self.music_defeat)
             self.stop()
         self.check_nitro()
         self.timer(self.do_timer)
@@ -157,7 +167,6 @@ class Game:
     def restart(self):
         self.record.col = 2
         self.record.col -= 1
-        print(self.record.read_records())
         self.do_spawn = True
         self.do_timer = True
         self.player.can_move = True

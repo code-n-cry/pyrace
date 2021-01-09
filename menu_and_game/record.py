@@ -9,23 +9,25 @@ class Record:
         self.connect.cursor().execute('''CREATE TABLE IF NOT EXISTS "record" (
                                         "id"	INTEGER,
                                         "score"	INTEGER,
+                                        "player" TEXT,
                                         PRIMARY KEY("id" AUTOINCREMENT)
                                         );''')
         self.col = 1
 
     def read_records(self):
         cur = self.connect.cursor()
-        score = cur.execute('''SELECT score FROM record''').fetchall()
+        score = cur.execute('''SELECT * FROM record''').fetchall()
         return score
 
-    def add_record(self, score):
+    def add_record(self, score, user, music):
         if self.col == 1:
+            music.play()
             self.col += 1
             cur = self.connect.cursor()
-            cur.execute('''INSERT INTO record VALUES (?, ?)''', (None, score))
+            cur.execute('''INSERT INTO record VALUES (?, ?, ?)''', (None, score, user))
             self.connect.commit()
 
-    def clear_records(self):
+    def clear_records(self, user):
         cur = self.connect.cursor()
-        cur.execute('''DELETE FROM record''')
+        cur.execute('''DELETE FROM record WHERE player=?''', user)
         self.connect.commit()

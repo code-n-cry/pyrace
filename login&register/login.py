@@ -29,14 +29,16 @@ class LoginWindow(QMainWindow):
         login = self.loginEdit.text()
         password = self.pasEdit.text()
         if login and password:
-            true_password = self.cur.execute("""SELECT password FROM users WHERE login=?""", (login,)).fetchone()
+            true_password = self.cur.execute("""SELECT password FROM users WHERE 
+            login=?""", (login,)).fetchone()
             if true_password:
                 if true_password[0] == ' '.join(format(ord(x), 'b') for x in password)[::-1]:
                     self.hide()
                     path = '/'.join(os.getcwd().replace('\\', '/').split('/')[:-1])
                     directory = '/menu_and_game/game_startup.py'
                     way_to_menu_file = path + directory
-                    subprocess.call(f'python {way_to_menu_file} {login}', shell=True)
+                    print(path + directory)
+                    subprocess.call(f'python "{way_to_menu_file}" {login}', shell=True)
                     exit()
                 else:
                     self.error.setText('Неправильный пароль!')
