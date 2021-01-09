@@ -3,6 +3,8 @@ import sqlite3
 
 
 class Record:
+    """Класс для работы со временем поездки пользователя"""
+
     def __init__(self):
         self.path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\'
         self.connect = sqlite3.connect(self.path + '\\game_data\\users_info.db')

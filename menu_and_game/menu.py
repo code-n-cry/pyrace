@@ -9,6 +9,9 @@ from roads import choose_roads
 
 
 class Menu:
+    """Главное меню. Позволяет просмотреть рекорды, перейти в магазин, гараж, выйти из игры, а также запустить непо
+    средственно саму игру. Также, отвечает за рендер надписи 'GAME OVER'"""
+
     def __init__(self, screen, background, road, player, user_login):
         width, height = screen.get_size()
         self.path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\'

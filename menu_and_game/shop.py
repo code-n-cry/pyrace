@@ -8,6 +8,9 @@ from clickable_image import ClickableImage
 
 
 class Shop:
+    """Класс магазина. Все картинки здесь кликабельные, отвечает за трату монет и, соответственно, покупку
+    автомобиля."""
+
     def __init__(self, surface, login, garage):
         self.return_menu = False
         Tk().wm_withdraw()

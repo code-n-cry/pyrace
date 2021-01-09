@@ -2,6 +2,8 @@ import pygame
 
 
 class Road:
+    """Реализация дороги с её рендером и картинкой"""
+
     def __init__(self, screen, image):
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image, (800, 800))

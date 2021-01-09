@@ -10,6 +10,8 @@ from garage import Garage
 from roads import choose_roads
 
 if __name__ == '__main__':
+    """Файл для запуска всей игры(меню, короче все файлы)"""
+
     fps = 60
     path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\'
     running = True

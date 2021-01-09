@@ -9,6 +9,8 @@ import sys
 
 
 class LoginWindow(QMainWindow):
+    """Окно для входа пользователя"""
+
     def __init__(self):
         super().__init__()
         uic.loadUi('data/Login.ui', self)

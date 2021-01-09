@@ -4,13 +4,16 @@ import json
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, group, choosen_car=1):
+    """Спрайт игрока. Класс реализует движение игрока, анимации движения, получение
+    характеристик выбранной машины из json-файла"""
+
+    def __init__(self, group, chosen_car=1):
         super().__init__(group)
         self.path = '\\'.join(os.getcwd().split('\\')[:-1])
-        Player.image = pygame.image.load(self.path + f'\\menu_and_game\\game_data\\Car{choosen_car}.png')
+        Player.image = pygame.image.load(self.path + f'\\menu_and_game\\game_data\\Car{chosen_car}.png')
         self.image = Player.image
         self.image.set_colorkey((255, 255, 255))
-        self.img_name = f'Car{choosen_car}'
+        self.img_name = f'Car{chosen_car}'
         self.rect = self.image.get_rect()
         self.rect.x = 450
         self.rect.y = 580

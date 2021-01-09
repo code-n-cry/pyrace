@@ -4,6 +4,8 @@ from random import choice
 
 
 class Npc(pygame.sprite.Sprite):
+    """Вражеская машина, класс загружает для неё случайную картинку и отвечает за движение"""
+
     def __init__(self, group, x, y, flipped=False):
         super().__init__(group)
         self.naklad = False

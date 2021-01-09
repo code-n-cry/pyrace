@@ -7,6 +7,8 @@ import json
 
 
 class InfoWindow(QMainWindow):
+    """Информация о машине(изображения, название, скорость, цена)"""
+
     def __init__(self, image):
         super().__init__()
         self.path = '\\'.join(os.getcwd().split('\\')[:-1])

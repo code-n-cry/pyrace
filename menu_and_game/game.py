@@ -1,17 +1,19 @@
 import random
-from coin import Coin
-from nitro import Nitro
+import os
 import time
 import pygame
 import pygame.freetype
+from coin import Coin
+from nitro import Nitro
 from npc import Npc
 from record import Record
-import os
 
 
 class Game:
-    def __init__(self, player, coin_group, nitro_group, enemy_group, player_group, road,
-                 surface, login):
+    """Класс, отвечающий за все процессы, происходящие во время игры. Обрабатывает пересечения объектов,
+    отвечает за их спавн, а также за рендер на экране"""
+
+    def __init__(self, player, coin_group, nitro_group, enemy_group, player_group, road, surface, login):
         self.ticks = 0
         self.speed = 5
         self.bg_time = time.time()
@@ -55,7 +57,7 @@ class Game:
             self.player.crashed = True
             self.record.add_record(round(time.time() - self.bg_time, 2), self.login,
                                    self.music_defeat)
-            self.stop()
+            self.stop()  # При столкновении с врагом записываем в БД время поездки, останавливаем игру.
         if self.player.rect.x <= 0 or self.player.rect.x >= 700:
             self.player.crashed = True
             self.record.add_record(round(time.time() - self.bg_time, 2), self.login,
@@ -65,6 +67,7 @@ class Game:
         self.timer(self.do_timer)
 
     def timer(self, do):
+        """Функция для отображения времени поездки"""
         if do:
             font = pygame.freetype.SysFont(None, 34)
             font.origin = True
@@ -115,6 +118,7 @@ class Game:
         return False
 
     def nitro(self):
+        """Ускорение(нитро - окись азота, использующаяся для увелечения характеристик двигателя)"""
         for coin in self.coin_group:
             coin.vy += 10
         for nitro in self.nitro_group:
