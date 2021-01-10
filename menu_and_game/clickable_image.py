@@ -4,6 +4,8 @@ import subprocess
 
 
 class ClickableImage:
+    """Кликабельная картинка. Позволяет выполнить какую-либо функцию при нажатии на неё"""
+
     def __init__(self, x, y, image, surface):
         self.path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\'
         self.image = pygame.transform.scale(pygame.image.load(self.path + f'game_data\\{image}.png'), (100, 170))

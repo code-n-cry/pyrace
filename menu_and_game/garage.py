@@ -6,6 +6,9 @@ from clickable_image import ClickableImage
 
 
 class Garage:
+    """Гараж. С помощью кликабельных картинок позволяет сделать картинки интекрактивными, позволяет выбрать машину и
+    запомнить выбор до следующего выбора"""
+
     def __init__(self, surface, menu, login):
         self.surface = surface
         self.menu = menu

@@ -5,59 +5,57 @@ import sqlite3
 from animated_background import Car
 from record import Record
 from button import Button
+from roads import choose_roads
 
 
 class Menu:
+    """Главное меню. Позволяет просмотреть рекорды, перейти в магазин, гараж, выйти из игры, а также запустить непо
+    средственно саму игру. Также, отвечает за рендер надписи 'GAME OVER'"""
+
     def __init__(self, screen, background, road, player, user_login):
         width, height = screen.get_size()
-        path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game'
-        self.con = sqlite3.connect(path + '\\game_data/users_info.db')
+        self.path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\'
+        self.con = sqlite3.connect(self.path + 'game_data\\users_info.db')
         cur = self.con.cursor()
         cur.execute('CREATE TABLE IF NOT EXISTS info(login, data)')
-        self.con.commit()
-        self.record = Record()
-        self.cars = 1
-        self.login = user_login
-        self.game = None
-        self.player = player
         logins = [i[0] for i in cur.execute('SELECT login FROM info').fetchall()]
         if user_login not in logins:
             cur.execute('INSERT INTO info VALUES(?, ?)',
                         (user_login, '#0000_1_0_0_0_0_0_0_0_0_1'))
-            self.con.commit()
+        self.con.commit()
+
+        self.cars = 1
+        self.header = ''
+        self.screen = screen
+        self.background = background
+        self.road = road
+        self.login = user_login
+        self.player = player
+        self.car = Car(width, height)
+        self.record = Record()
         self.start_button = Button(10, 10, 132, 50, 'Играть', screen, (66, 245, 206),
-                                   (0, 0, 0), (227, 66, 245), 0, 55,
-                                   self.start_game)
-        self.quit_button = Button(width - 142, 10, 132, 45, 'Выход', screen,
-                                  (66, 245, 206),
-                                  (0, 0, 0), (227, 66, 245), 0, 50, self.quit)
+                                   (255, 204, 0), (227, 66, 245), 1, 55, self.start_game)
+        self.quit_button = Button(width - 142, 10, 132, 45, 'Выход', screen, (66, 245, 206),
+                                  (255, 204, 0), (227, 66, 245), 1, 50, self.quit)
         self.shop_button = Button(10, 70, 132, 45, 'Магазин', screen, (66, 245, 206),
-                                  (0, 0, 0), (227, 66, 245), 0, 46,
-                                  self.shop)
-        self.garage_button = Button(10, 130, 173, 45, 'Ваш гараж', screen,
-                                    (66, 245, 206), (0, 0, 0), (227, 66, 245), 0,
-                                    46, self.garage)
-        # self.garage_buttom = Button()
+                                  (255, 204, 0), (227, 66, 245), 1, 46, self.shop)
+        self.garage_button = Button(10, 130, 173, 45, 'Ваш гараж', screen, (66, 245, 206),
+                                    (255, 204, 0), (227, 66, 245), 1, 46, self.garage)
         self.buttons = [self.start_button, self.quit_button, self.shop_button,
                         self.garage_button]
+        self.game = None
         self.is_started = False
         self.is_shopped = False
         self.in_garage = False
         self.game_over = False
-        self.choosen_car = int(
-            cur.execute('SELECT data FROM info WHERE login=?', (self.login,)).fetchone()[
-                0].split('_')[-1])
-        melodies = [path + '\\menu_data\\CB2077.mp3',
-                    path + '\\menu_data\\menu_music.wav']
+        melodies = [self.path + 'menu_data\\menu_music.wav']
         self.music = pygame.mixer.Sound(random.choice(melodies))
-        self.car = Car(width, height)
         self.sprites = pygame.sprite.Group(self.car)
-        self.screen = screen
-        self.background = background
-        self.road = road
+        self.chosen_car = int(
+            cur.execute('SELECT data FROM info WHERE login=?', (self.login,)).fetchone()[0].split('_')[-1])
 
     def render(self):
-        # self.music.play()
+        self.music.play()
         self.sprites.clear(self.screen, self.background)
         self.sprites.update()
         self.sprites.draw(self.screen)
@@ -66,24 +64,24 @@ class Menu:
             btn.render()
 
     def render_record(self):
-        all_recs = self.record.read_records()
+        all_records = self.record.read_records()
         records = []
-        for elem in all_recs:
-            if elem[2] == self.login:
-                records.append(elem)
+        for data in all_records:
+            if data[2] == self.login:
+                records.append(data)
         records.sort(key=lambda x: x[1])
         if len(records) < 5:
             self.header = 'Последние заезды:'
-        if len(records) == 0:
-            self.header = 'Начни игру'
+        elif len(records) == 0:
+            self.header = 'Начни игру!'
         else:
             self.header = 'Топ-5 заездов:'
-            records = records[5:]
+            records = records[::-1][:6]
+        font = pygame.font.SysFont('Montserrat', 55)
+        header = font.render(self.header, True, (255, 204, 0))
+        self.screen.blit(header, (10, 400))
         if records:
-            y_coord = 745
-            font = pygame.font.SysFont('Montserrat', 55)
-            header = font.render(self.header, True, (255, 204, 0))
-            self.screen.blit(header, (0, 400))
+            y_coord = 710
             font = pygame.font.SysFont('Montserrat', 40)
             for i in records:
                 rec = font.render(f'{i[1]} сек.', True, (66, 245, 206))
@@ -103,14 +101,16 @@ class Menu:
             btn.check_mouse_up()
 
     def start_game(self):
-        self.player.update_image(self.choosen_car)
+        image = pygame.image.load(self.path + f'game_data\\{choose_roads()}.jpg')
+        self.road.image = pygame.transform.scale(image, (800, 800))
+        self.player.update_image(self.chosen_car)
         self.is_started = True
         self.music.stop()
         self.game.restart()
         self.game.unstop()
 
     def quit(self):
-        exit()
+        exit(1)
 
     def shop(self):
         self.is_shopped = True
@@ -124,9 +124,7 @@ class Menu:
         if player.check() or player.crashed:
             cur = self.con.cursor()
             data_str = \
-                cur.execute('SELECT data FROM info WHERE login=?',
-                            (self.login,)).fetchone()[
-                    0]
+                cur.execute('SELECT data FROM info WHERE login=?', (self.login,)).fetchone()[0]
             coins = data_str[1:].split('_')[0]
             old_coins = int(coins)
             coins = '0' * len(str(1000 - player.got_coins + old_coins)) + str(

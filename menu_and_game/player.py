@@ -1,15 +1,19 @@
 import pygame
 import os
+import json
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, group, choosen_car=1):
+    """Спрайт игрока. Класс реализует движение игрока, анимации движения, получение
+    характеристик выбранной машины из json-файла"""
+
+    def __init__(self, group, chosen_car=1):
         super().__init__(group)
         self.path = '\\'.join(os.getcwd().split('\\')[:-1])
-        Player.image = pygame.image.load(self.path + f'\\menu_and_game\\game_data\\Car{choosen_car}.png')
+        Player.image = pygame.image.load(self.path + f'\\menu_and_game\\game_data\\Car{chosen_car}.png')
         self.image = Player.image
         self.image.set_colorkey((255, 255, 255))
-        self.img_name = f'Car{choosen_car}'
+        self.img_name = f'Car{chosen_car}'
         self.rect = self.image.get_rect()
         self.rect.x = 450
         self.rect.y = 580
@@ -56,17 +60,19 @@ class Player(pygame.sprite.Sprite):
 
     def set_speed(self):
         need_data = None
-        with open(self.path + '\\menu_and_game\\menu_data\\data.txt', encoding='utf-8') as data:
-            all_data = data.read().split('\n')
-        for i in all_data:
-            if i.split(':')[0] == self.img_name:
+        with open(self.path + '\\menu_and_game\\game_data\\cars.json', encoding='utf-8') as data:
+            all_data = json.load(data)
+        for i in all_data['cars']:
+            if i['id'] == self.img_name:
                 need_data = i
-        speed = int(need_data.split(':')[1].split(',')[1])
+        speed = need_data['speed']
         return speed
 
     def check(self):
         if 0 <= self.rect.x <= 690:
             return False
+        else:
+            self.can_move = False
         return True
 
     def respawn(self):

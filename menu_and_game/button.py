@@ -2,7 +2,10 @@ import pygame
 
 
 class Button:
-    def __init__(self, x, y, w, h, text, surface, bcolor, tcolor, hcolor, border, tsize, func, centr_text=False):
+    """Конструктор кнопки. Позволяет поменять текст кнопки и её координаты.
+    Задаёт цвет выделения кнопки(просмотрев другие проекты, мы такого не увидели)"""
+
+    def __init__(self, x, y, w, h, text, surface, bcolor, tcolor, hcolor, border, tsize, func, center_text=False):
         self.font = pygame.font.SysFont('Montserrat', tsize)
         self.bound = pygame.Rect(x, y, w, h)
         self.text = str(text)
@@ -13,7 +16,7 @@ class Button:
         self.border = border
         self.state = 'normal'
         self.on_click_func = func
-        self.centralize_text = centr_text
+        self.centralize_text = center_text
 
     def render(self):
         if self.state == 'normal':
@@ -25,11 +28,7 @@ class Button:
 
     def render_text(self, x, y):
         text_object = self.font.render(self.text, True, self.text_color)
-        if not self.centralize_text:
-            self.surface.blit(text_object, (x, y))
-        else:
-            pos = (x - self.bound.width // 2, y)
-            self.surface.blit(text_object, pos)
+        self.surface.blit(text_object, (x, y))
 
     def check_mouse_motion(self, pos):
         if self.bound.collidepoint(pos[0], pos[1]):

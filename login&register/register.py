@@ -6,6 +6,8 @@ import sqlite3
 
 
 class RegWindow(QWidget):
+    """Окно регистрации"""
+
     def __init__(self, parent=None):
         super(RegWindow, self).__init__(parent, Qt.Window)
         uic.loadUi('data/Reg.ui', self)
@@ -17,6 +19,8 @@ class RegWindow(QWidget):
         self.pasEdit2.setEchoMode(QLineEdit.Password)
 
     def reg(self):
+        """Проверка всех данных"""
+
         self.errors.clear()
         login = self.logEdit.text()
         email = self.mailEdit.text()
@@ -56,6 +60,8 @@ class RegWindow(QWidget):
             self.errors.setText('Пароли должны совпадать!')
 
     def check_login(self, login):
+        """Логин не должен быть в базе данных(условие в функции check) и должен быть из некириллических символов"""
+
         login = login.lower()
         cyrillic = 'йцукенгшщзхъёфывапролджэячсмитьбю'
         for i in cyrillic:
@@ -64,6 +70,8 @@ class RegWindow(QWidget):
         return True
 
     def check_email(self, email):
+        """Проверка email производится по наличию символа '@' и  правильному сервису почты"""
+
         emails = self.cur.execute("""SELECT email FROM users""").fetchall()
         for i in emails:
             if email == i[0]:
@@ -77,6 +85,9 @@ class RegWindow(QWidget):
         return True
 
     def checking_password(self, password):
+        """Проверка пароля производится по длине(>=8), наличию цифр и букв,
+        отсутствию трёхзначных сочетаний с клавиатуры в пароле"""
+
         digits = '1234567890'
         fst_line = 'qwertyuiopйцукенгшщзхъ'
         sec_line = 'asdfghjklфывапролджэ'
