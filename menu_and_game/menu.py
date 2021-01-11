@@ -76,12 +76,12 @@ class Menu:
             self.header = 'Начни игру!'
         else:
             self.header = 'Топ-5 заездов:'
-            records = records[::-1][:6]
+            records = records[::-1][:5]
         font = pygame.font.SysFont('Montserrat', 55)
         header = font.render(self.header, True, (255, 204, 0))
         self.screen.blit(header, (10, 400))
         if records:
-            y_coord = 710
+            y_coord = 690
             font = pygame.font.SysFont('Montserrat', 40)
             for i in records:
                 rec = font.render(f'{i[1]} сек.', True, (66, 245, 206))
@@ -101,6 +101,7 @@ class Menu:
             btn.check_mouse_up()
 
     def start_game(self):
+        print(self.chosen_car)
         image = pygame.image.load(self.path + f'game_data\\{choose_roads()}.jpg')
         self.road.image = pygame.transform.scale(image, (800, 800))
         self.player.update_image(self.chosen_car)

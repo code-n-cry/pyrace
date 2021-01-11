@@ -24,9 +24,9 @@ class RegWindow(QWidget):
         self.errors.clear()
         login = self.logEdit.text()
         email = self.mailEdit.text()
-        pas = self.pasEdit.text()
-        repeat_pas = self.pasEdit2.text()
-        if login and email and pas and repeat_pas and repeat_pas == pas:
+        password = self.pasEdit.text()
+        repeat_password = self.pasEdit2.text()
+        if login and email and password and repeat_password and repeat_password == password:
             if not self.check_login(login):
                 self.errors.setText('В логине не должно быть русских букв!')
             if not self.check_email(email):
@@ -37,13 +37,13 @@ class RegWindow(QWidget):
                 if self.check_email(email) == []:
                     self.errors.setText(
                         'Аккаунт, зарегистрированный на эту почту, уже существует!')
-            if self.checking_password(pas):
-                self.errors.setText(str(self.checking_password(pas)))
+            if self.checking_password(password):
+                self.errors.setText(str(self.checking_password(password)))
             else:
                 logins = [i[0] for i in
                           self.cur.execute("""SELECT login FROM users""").fetchall()]
                 if login not in logins:
-                    pas = ' '.join(format(ord(x), 'b') for x in pas)[::-1]
+                    pas = ' '.join(format(ord(x), 'b') for x in password)[::-1]
                     self.cur.execute("""INSERT INTO users  VALUES (?, ?, ?)""",
                                      (login, email, pas))
                     self.db.commit()
@@ -54,9 +54,9 @@ class RegWindow(QWidget):
             self.errors.setText('Введите логин!')
         elif not email:
             self.errors.setText('Введите e-mail!')
-        elif not pas or not repeat_pas:
+        elif not password or not repeat_password:
             self.errors.setText('Введите пароль в оба поля!')
-        elif pas != repeat_pas:
+        elif password != repeat_password:
             self.errors.setText('Пароли должны совпадать!')
 
     def check_login(self, login):
