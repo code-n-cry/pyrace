@@ -8,7 +8,9 @@ class ClickableImage:
 
     def __init__(self, x, y, image, surface):
         self.path = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\'
-        self.image = pygame.transform.scale(pygame.image.load(self.path + f'game_data\\{image}.png'), (100, 170))
+        self.image = pygame.transform.scale(
+            pygame.image.load(self.path + f'game_data\\{image}.png'), (100, 170))
+        self.orig_image = pygame.image.load(self.path + f'game_data\\{image}.png')
         self.image = pygame.transform.flip(self.image, True, False)
         self.str_img = image
         self.bound = pygame.Rect(x, y, 100, 170)
