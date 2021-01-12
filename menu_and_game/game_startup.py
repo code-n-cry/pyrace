@@ -24,7 +24,7 @@ if __name__ == '__main__':
     size = width, height = 800, 800
     screen = pygame.display.set_mode(size, pygame.NOFRAME)
     background = pygame.Surface(screen.get_size())
-    player_sprites = pygame.sprite.Group()
+    player_sprites = pygame.sprite.Group() 
     nitro_sprites = pygame.sprite.Group()
     coin_sprites = pygame.sprite.Group()
     npc_sprites = pygame.sprite.Group()

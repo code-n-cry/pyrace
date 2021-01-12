@@ -3,6 +3,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon
 import sqlite3
+import datetime
 
 
 class RegWindow(QWidget):
@@ -11,6 +12,33 @@ class RegWindow(QWidget):
     def __init__(self, parent=None):
         super(RegWindow, self).__init__(parent, Qt.Window)
         uic.loadUi('data/Reg.ui', self)
+        if 8 <= datetime.datetime.now().hour <= 21:
+            self.pasEdit.setStyleSheet('''border: 1px solid gray; border-radius: 5px''')
+            self.logEdit.setStyleSheet('''border: 1px solid gray; border-radius: 5px''')
+            self.mailEdit.setStyleSheet('''border: 1px solid gray; border-radius: 5px''')
+            self.pasEdit2.setStyleSheet('''border: 1px solid gray; border-radius: 5px''')
+            self.regButton.setStyleSheet('''border: 1px solid gray; border-radius: 5px''')
+        else:
+            self.label.setStyleSheet('color: #a1a7ba')
+            self.label_2.setStyleSheet('color: #a1a7ba')
+            self.label_3.setStyleSheet('color: #a1a7ba')
+            self.label_4.setStyleSheet('color: #a1a7ba')
+            self.errors.setStyleSheet('color: #a1a7ba')
+            self.logEdit.setStyleSheet('''background-color: #0d0505;
+                                     color: #a1a7ba;
+                                      border: 1px solid gray; border-radius: 5px''')
+            self.mailEdit.setStyleSheet('''background-color: #0d0505;
+                                     color: #a1a7ba;
+                                      border: 1px solid gray; border-radius: 5px''')
+            self.pasEdit.setStyleSheet('''background-color: #0d0505;
+                                     color: #a1a7ba;
+                                      border: 1px solid gray; border-radius: 5px''')
+            self.pasEdit2.setStyleSheet('''background-color: #0d0505;
+                                     color: #a1a7ba;
+                                      border: 1px solid gray; border-radius: 5px''')
+            self.regButton.setStyleSheet('''color: #a1a7ba; background-color: #0d0505;
+                                                border: 1px solid gray; border-radius: 5px''')
+            self.setStyleSheet("""QWidget {background-color: #0d0505}""")
         self.setWindowIcon(QIcon('../login&register/data/reg.png'))
         self.db = sqlite3.connect('data/accounts.db')
         self.cur = self.db.cursor()
@@ -60,7 +88,8 @@ class RegWindow(QWidget):
             self.errors.setText('Пароли должны совпадать!')
 
     def check_login(self, login):
-        """Логин не должен быть в базе данных(условие в функции check) и должен быть из некириллических символов"""
+        """Логин не должен быть в базе данных(условие в функции check) и должен быть из
+        некириллических символов """
 
         login = login.lower()
         cyrillic = 'йцукенгшщзхъёфывапролджэячсмитьбю'
