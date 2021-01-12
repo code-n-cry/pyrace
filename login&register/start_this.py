@@ -6,6 +6,7 @@ import os
 import subprocess
 import sqlite3
 import sys
+import datetime
 
 
 class LoginWindow(QMainWindow):
@@ -14,6 +15,26 @@ class LoginWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi('data/Login.ui', self)
+        if 8 <= datetime.datetime.now().hour <= 21:
+            self.pasEdit.setStyleSheet('''border: 1px solid gray; border-radius: 5px''')
+            self.loginEdit.setStyleSheet('''border: 1px solid gray; border-radius: 5px''')
+            self.logButton.setStyleSheet('''border: 1px solid gray; border-radius: 5px;''')
+            self.regButton.setStyleSheet('''border: 1px solid gray; border-radius: 5px''')
+        else:
+            self.label_2.setStyleSheet('color: #a1a7ba')
+            self.label.setStyleSheet('color: #a1a7ba')
+            self.error.setStyleSheet('color: #a1a7ba')
+            self.pasEdit.setStyleSheet('''background-color: #0d0505;
+                         color: #a1a7ba;
+                          border: 1px solid gray; border-radius: 5px''')
+            self.loginEdit.setStyleSheet('''background-color: #0d0505;
+                         color: #a1a7ba;
+                          border: 1px solid gray; border-radius: 5px''')
+            self.logButton.setStyleSheet('''color: #a1a7ba; background-color: #0d0505;
+                        border: 1px solid gray; border-radius: 5px;''')
+            self.regButton.setStyleSheet('''color: #a1a7ba; background-color: #0d0505;
+                                    border: 1px solid gray; border-radius: 5px''')
+            self.setStyleSheet("""QMainWindow {background-color: #0d0505}""")
         self.setWindowIcon(QIcon('../login&register/data/logging.jpg'))
         self.db = sqlite3.connect('data/accounts.db')
         self.cur = self.db.cursor()
@@ -46,6 +67,13 @@ class LoginWindow(QMainWindow):
                     self.error.setText('Неправильный пароль!')
             else:
                 self.error.setText('Пользователя с таким логином нет!')
+        else:
+            if not login and not password:
+                self.error.setText('Введите логин и пароль!')
+            elif not login:
+                self.error.setText('Введите логин!')
+            elif not password:
+                self.error.setText('Введите пароль!')
 
 
 if __name__ == '__main__':
