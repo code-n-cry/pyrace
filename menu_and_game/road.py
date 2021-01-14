@@ -8,6 +8,7 @@ class Road:
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image, (800, 800))
         self.pos = 0
+        self.speed = 5
         self.screen = screen
         self.screen.fill((0, 0, 0))
 

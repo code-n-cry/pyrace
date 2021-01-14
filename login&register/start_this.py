@@ -20,6 +20,7 @@ class LoginWindow(QMainWindow):
             self.loginEdit.setStyleSheet('''border: 1px solid gray; border-radius: 5px''')
             self.logButton.setStyleSheet('''border: 1px solid gray; border-radius: 5px;''')
             self.regButton.setStyleSheet('''border: 1px solid gray; border-radius: 5px''')
+            self.error.setStyleSheet('color: black')
         else:
             self.label_2.setStyleSheet('color: #a1a7ba')
             self.label.setStyleSheet('color: #a1a7ba')

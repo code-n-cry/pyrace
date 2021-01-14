@@ -13,7 +13,8 @@ class Game:
     """Класс, отвечающий за все процессы, происходящие во время игры. Обрабатывает пересечения объектов,
     отвечает за их спавн, а также за рендер на экране"""
 
-    def __init__(self, player, coin_group, nitro_group, enemy_group, player_group, road, surface, login):
+    def __init__(self, player, coin_group, nitro_group, enemy_group, player_group, road, surface,
+                 login):
         self.ticks = 0
         self.speed = 5
         self.bg_time = time.time()
@@ -38,10 +39,10 @@ class Game:
 
     def render(self, event):
         self.ticks = pygame.time.get_ticks()
-        self.player_group.update(event)
         self.coin_group.update(event)
         self.nitro_group.update(event)
         self.enemy_group.update(event)
+        #self.player_group.update(event)
         self.road.move(self.speed)
         self.coin_group.draw(self.screen)
         self.nitro_group.draw(self.screen)
@@ -57,7 +58,8 @@ class Game:
             self.player.crashed = True
             self.record.add_record(round(time.time() - self.bg_time, 2), self.login,
                                    self.music_defeat)
-            self.stop()  # При столкновении с врагом записываем в БД время поездки, останавливаем игру.
+            self.stop()  # При столкновении с врагом записываем в БД время поездки, останавливаем
+            # игру.
         if self.player.rect.x <= 0 or self.player.rect.x >= 700:
             self.player.crashed = True
             self.record.add_record(round(time.time() - self.bg_time, 2), self.login,

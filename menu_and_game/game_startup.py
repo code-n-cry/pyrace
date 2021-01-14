@@ -39,6 +39,7 @@ if __name__ == '__main__':
     game = Game(main_player, coin_sprites, nitro_sprites, npc_sprites, player_sprites,
                 road, screen, str(sys.argv[1]))
     main_menu.set_game_class(game)
+    moving_event = 0
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -50,6 +51,10 @@ if __name__ == '__main__':
                     main_player.respawn()
                 if event.key != pygame.K_ESCAPE and main_menu.game_over:
                     main_menu.game_over_text()
+                if main_menu.is_started:
+                    moving_event = event
+            if event.type == pygame.KEYUP:
+                moving_event = event
             if event.type == pygame.MOUSEMOTION:
                 if not main_menu.is_started and not main_menu.is_shopped and not main_menu.in_garage:
                     main_menu.check_mouse_motion(event.pos)
@@ -96,6 +101,9 @@ if __name__ == '__main__':
             game.spawn()
             game.render(event)
             game.road.speed = 5
+            if moving_event:
+                print(moving_event.key == pygame.K_d)
+                player_sprites.update(moving_event)
             if main_menu.check_game_over(main_player, shop):
                 change_road = True
         if shop.quit(event):

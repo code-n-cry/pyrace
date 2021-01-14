@@ -4,7 +4,8 @@ import os
 
 class Coin(pygame.sprite.Sprite):
     """Спрайт монетки"""
-    image = pygame.image.load('\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\coin.png')
+    image = pygame.image.load('\\'.join(os.getcwd().split('\\')[:-1]) +
+                              '\\menu_and_game\\game_data\\coin.png')
 
     def __init__(self, group, x, y, road):
         super().__init__(group)
