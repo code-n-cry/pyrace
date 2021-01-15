@@ -1,19 +1,26 @@
 import pygame
 import os
 import sqlite3
+from tkinter import *
+from tkinter import messagebox
 from button import Button
+from clickable_image import ClickableImage
 
 
 class Shop:
-    def __init__(self, surface, login):
+    """Класс магазина. Все картинки здесь кликабельные, отвечает за трату монет и, соответственно, покупку
+    автомобиля."""
+
+    def __init__(self, surface, login, garage):
         self.return_menu = False
+        Tk().wm_withdraw()
         path_to_db = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\users_info.db'
         self.con = sqlite3.connect(path_to_db)
         cur = self.con.cursor()
         data_str = cur.execute('SELECT data FROM info WHERE login=?', (login,)).fetchone()[0]
         cur.close()
         self.coins = int(data_str.split('_')[0][1:])
-        self.cars = [int(i) for i in data_str.split('_')[1:]]
+        self.cars = [int(i) for i in data_str.split('_')[1:-1]]
         self.bought_item = None
         self.surface = surface
         self.login = login
@@ -21,18 +28,22 @@ class Shop:
         self.buttons = []
         self.load_buttons()
         self.load_images()
+        self.garage = garage
 
     def load_images(self):
-        path_to_img = '\\'.join(os.getcwd().split('\\')[:-1]) + '\\menu_and_game\\game_data\\'
+        x, y = 100, 40
         for i in range(1, 10):
-            image = pygame.image.load(path_to_img + f'Car{i}.png')
-            image = pygame.transform.flip(image, True, False)
-            image = pygame.transform.scale(image, (100, 170))
+            image = ClickableImage(x, y, f'Car{i}', self.surface)
             self.images.append(image)
+            if x < 600:
+                x += 250
+            else:
+                y += 270
+                x = 100
 
     def load_buttons(self):
-        x, y = 135, 220
-        first_price = 10
+        x, y = self.surface.get_width() // 3 - 135, 220
+        first_price = 20
         for i in range(9):
             if self.cars[i] == 1:
                 b = Button(x - 25, y, 75, 30, 'Куплено', self.surface, (66, 245, 206), (0, 0, 0), (227, 66, 245), 0, 25,
@@ -49,15 +60,9 @@ class Shop:
                 x = 135
 
     def render(self):
-        x, y = 100, 40
         for i in self.images:
-            self.surface.blit(i, (x, y))
+            i.render()
             self.buttons[self.images.index(i)].render()
-            if x < 600:
-                x += 250
-            else:
-                y += 270
-                x = 100
         self.render_text()
 
     def buy(self):
@@ -74,29 +79,34 @@ class Shop:
                 else:
                     coins = '0' * 4
                 cars_for_db = '_'.join([str(i) for i in self.cars])
-                str_for_db = f'#{coins}_{cars_for_db}'
                 cur = self.con.cursor()
+                choosen_car = \
+                    cur.execute('SELECT data FROM info WHERE login=?', (self.login,)).fetchone()[0].split('_')[-1]
+                str_for_db = f'#{coins}_{cars_for_db}_{choosen_car}'
                 cur.execute('UPDATE info SET data=? WHERE login=?', (str_for_db, self.login))
                 self.con.commit()
                 cur.close()
+                self.garage.update_cars()
             else:
-                print('Недостаточно средств!')
+                messagebox.showinfo('Низя :(', 'Недостаточно средств!')
         else:
-            print('Вы уже купили эту машину!')
+            messagebox.showinfo(':D', 'Вы уже купили данный автомобиль!')
 
     def check_mouse_motion(self, pos):
-        for i in self.buttons:
-            i.check_mouse_motion(pos)
+        for btn in self.buttons:
+            btn.check_mouse_motion(pos)
 
     def check_mouse_down(self, pos):
-        for i in self.buttons:
-            i.check_mouse_down(pos)
-            if i.state == 'pressed':
-                self.bought_item = self.buttons.index(i)
+        for btn in self.buttons:
+            btn.check_mouse_down(pos)
+            if btn.state == 'pressed':
+                self.bought_item = self.buttons.index(btn)
+        for img in self.images:
+            img.check_mouse_down(pos)
 
     def check_mouse_up(self):
-        for i in self.buttons:
-            i.check_mouse_up()
+        for btn in self.buttons:
+            btn.check_mouse_up()
 
     def quit(self, event):
         if event.type == pygame.KEYDOWN:
@@ -107,6 +117,7 @@ class Shop:
         font = pygame.font.SysFont('Montserrat', 30)
         text = font.render(f'Ваши монеты: {self.coins}', True, (255, 255, 255))
         self.surface.blit(text, (0, 15))
+
     def update_coins(self):
         cur = self.con.cursor()
         self.coins = int(
