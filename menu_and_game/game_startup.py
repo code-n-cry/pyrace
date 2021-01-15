@@ -25,7 +25,7 @@ if __name__ == '__main__':
     size = width, height = 800, 800
     screen = pygame.display.set_mode(size, pygame.NOFRAME)
     background = pygame.Surface(screen.get_size())
-    player_sprites = pygame.sprite.Group() 
+    player_sprites = pygame.sprite.Group()
     nitro_sprites = pygame.sprite.Group()
     coin_sprites = pygame.sprite.Group()
     npc_sprites = pygame.sprite.Group()
@@ -106,18 +106,25 @@ if __name__ == '__main__':
         if not main_menu.is_shopped and not main_menu.is_started and not main_menu.in_garage and main_menu.in_roads and not main_menu.in_settings:
             screen.fill('#c0c0c0')
             road_select.render()
+            if road_select.choosen_road != 0:
+                road.image = road_select.choosen_road
+                change_road = False
         if not main_menu.is_shopped and not main_menu.is_started and not main_menu.in_garage and not main_menu.in_roads and main_menu.in_settings:
             screen.fill('#c0c0c0')
             settings.render()
+            main_menu.music.set_volume(settings.choosen_m_volume / 100)
+            game.music_defeat.set_volume(settings.choosen_s_volume / 100)
+            game.music_coin.set_volume(settings.choosen_s_volume / 100)
+            game.music_nitro.set_volume(settings.choosen_s_volume / 100)
         if main_menu.is_started and not main_menu.is_shopped and not main_menu.in_garage and not main_menu.in_settings:
             game.spawn()
             game.render(event)
             game.road.speed = 5
             if moving_event:
-                print(moving_event.key == pygame.K_d)
                 player_sprites.update(moving_event)
             if main_menu.check_game_over(main_player, shop):
-                change_road = True
+                if road_select.choosen_road == 0:
+                    change_road = True
         if shop.quit(event):
             main_menu.is_shopped = False
         if garage.quit(event):

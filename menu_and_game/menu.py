@@ -62,7 +62,7 @@ class Menu:
         self.in_settings = False
         melodies = [self.path + 'menu_data\\menu_music.wav']
         self.music = pygame.mixer.Sound(random.choice(melodies))
-        self.music.set_volume(0.05)
+        self.music.set_volume(0.1)
         self.sprites = pygame.sprite.Group(self.car)
         self.chosen_car = int(
             cur.execute('SELECT data FROM info WHERE login=?', (self.login,)).fetchone()[

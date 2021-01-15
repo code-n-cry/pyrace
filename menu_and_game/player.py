@@ -68,15 +68,14 @@ class Player(pygame.sprite.Sprite):
         if self.rect.x > 0:
             self.vx = -self.set_speed()
             self.image = pygame.transform.rotate(Player.image, 30)
-            self.image = pygame.transform.scale(self.image, (140, 200))
+            pygame.draw.lines(self.image, (255, 0, 0), True, [(0, 0), (0, 180), (100, 180), (100, 0)])
             self.image.set_colorkey((255, 255, 255))
 
     def move_right(self):
         if self.rect.x < 800 - self.rect.width:
-            print('dada')
             self.vx = self.set_speed()
             self.image = pygame.transform.rotate(Player.image, 330)
-            self.image = pygame.transform.scale(self.image, (140, 200))
+            pygame.draw.lines(self.image, (255, 0, 0), True, [(0, 0), (0, 180), (100, 180), (100, 0)])
             self.image.set_colorkey((255, 255, 255))
 
     def unmove_left(self):
