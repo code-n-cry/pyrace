@@ -9,6 +9,7 @@ from game import Game
 from garage import Garage
 from roads import choose_roads
 from road_select import Road_select
+from setting import Settings
 
 if __name__ == '__main__':
     """Файл для запуска всей игры(меню, короче все файлы)"""
@@ -31,6 +32,7 @@ if __name__ == '__main__':
     road = Road(screen, path + f'{choose_roads()}.png')
     main_player = Player(player_sprites)
     main_menu = Menu(screen, background, road, main_player, str(sys.argv[1]))
+    settings = Settings(screen, main_menu, main_menu.login)
     garage = Garage(screen, main_menu, main_menu.login)
     road_select = Road_select(screen, main_menu, main_menu.login)
     change_road = False
@@ -56,7 +58,7 @@ if __name__ == '__main__':
             if event.type == pygame.KEYUP:
                 moving_event = event
             if event.type == pygame.MOUSEMOTION:
-                if not main_menu.is_started and not main_menu.is_shopped and not main_menu.in_garage:
+                if not main_menu.is_started and not main_menu.is_shopped and not main_menu.in_garage and not main_menu.in_settings:
                     main_menu.check_mouse_motion(event.pos)
                 if main_menu.is_shopped:
                     shop.check_mouse_motion(event.pos)
@@ -64,8 +66,11 @@ if __name__ == '__main__':
                     garage.check_mouse_motion(event.pos)
                 if main_menu.in_roads:
                     road_select.check_mouse_motion(event.pos)
+                if main_menu.in_settings:
+                    settings.check_mouse_motion(event.pos)
+
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if not main_menu.is_started and not main_menu.is_shopped and not main_menu.in_garage:
+                if not main_menu.is_started and not main_menu.is_shopped and not main_menu.in_garage and not main_menu.in_settings:
                     main_menu.check_mouse_down(event.pos)
                 if main_menu.is_shopped:
                     shop.check_mouse_down(event.pos)
@@ -73,8 +78,10 @@ if __name__ == '__main__':
                     garage.check_mouse_down(event.pos)
                 if main_menu.in_roads:
                     road_select.check_mouse_down(event.pos)
+                if main_menu.in_settings:
+                    settings.check_mouse_down(event.pos)
             if event.type == pygame.MOUSEBUTTONUP:
-                if not main_menu.is_started and not main_menu.is_shopped and not main_menu.in_garage:
+                if not main_menu.is_started and not main_menu.is_shopped and not main_menu.in_garage and not main_menu.in_settings:
                     main_menu.check_mouse_up()
                 if main_menu.is_shopped:
                     shop.check_mouse_up()
@@ -82,22 +89,27 @@ if __name__ == '__main__':
                     garage.check_mouse_up()
                 if main_menu.in_roads:
                     road_select.check_mouse_up()
+                if main_menu.in_settings:
+                    settings.check_mouse_up()
         if not main_menu.is_started and not main_menu.is_shopped and not main_menu.in_garage and not main_menu.in_roads:
             main_menu.render()
             if change_road:
                 game.road.image = pygame.transform.scale(
                     pygame.image.load(path + f'{choose_roads()}.png'), (800, 800))
                 change_road = False
-        if main_menu.is_shopped and not main_menu.is_started and not main_menu.in_garage and not main_menu.in_roads:
+        if main_menu.is_shopped and not main_menu.is_started and not main_menu.in_garage and not main_menu.in_roads and not main_menu.in_settings:
             screen.fill('#c0c0c0')
             shop.render()
-        if not main_menu.is_shopped and not main_menu.is_started and main_menu.in_garage and not main_menu.in_roads:
+        if not main_menu.is_shopped and not main_menu.is_started and main_menu.in_garage and not main_menu.in_roads and not main_menu.in_settings:
             screen.fill('#c0c0c0')
             garage.render()
-        if not main_menu.is_shopped and not main_menu.is_started and not main_menu.in_garage and main_menu.in_roads:
+        if not main_menu.is_shopped and not main_menu.is_started and not main_menu.in_garage and main_menu.in_roads and not main_menu.in_settings:
             screen.fill('#c0c0c0')
             road_select.render()
-        if main_menu.is_started and not main_menu.is_shopped and not main_menu.in_garage:
+        if not main_menu.is_shopped and not main_menu.is_started and not main_menu.in_garage and not main_menu.in_roads and main_menu.in_settings:
+            screen.fill('#c0c0c0')
+            settings.render()
+        if main_menu.is_started and not main_menu.is_shopped and not main_menu.in_garage and not main_menu.in_settings:
             game.spawn()
             game.render(event)
             game.road.speed = 5
@@ -112,5 +124,7 @@ if __name__ == '__main__':
             main_menu.in_garage = False
         if road_select.quit(event):
             main_menu.in_roads = False
+        if settings.quit(event):
+            main_menu.in_settings = False
         pygame.display.flip()
         clock.tick(fps)

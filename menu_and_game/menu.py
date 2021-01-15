@@ -8,6 +8,7 @@ from button import Button
 from roads import choose_roads
 
 
+
 class Menu:
     """Главное меню. Позволяет просмотреть рекорды, перейти в магазин, гараж, выйти из игры, а также запустить непо
     средственно саму игру. Также, отвечает за рендер надписи 'GAME OVER'"""
@@ -46,14 +47,19 @@ class Menu:
         self.roads_button = Button(10, 190, 232, 45, 'Выбор дороги', screen,
                                    (66, 245, 206),
                                    (255, 204, 0), (227, 66, 245), 1, 46, self.roads)
+
+        self.settings_button = Button(10, 280, 232, 45, 'Настройки', screen,
+                                   (66, 245, 206),
+                                   (255, 204, 0), (227, 66, 245), 1, 46, self.setting)
         self.buttons = [self.start_button, self.quit_button, self.shop_button,
-                        self.garage_button, self.roads_button]
+                        self.garage_button, self.roads_button, self.settings_button]
         self.game = None
         self.is_started = False
         self.is_shopped = False
         self.in_garage = False
         self.in_roads = False
         self.game_over = False
+        self.in_settings = False
         melodies = [self.path + 'menu_data\\menu_music.wav']
         self.music = pygame.mixer.Sound(random.choice(melodies))
         self.music.set_volume(0.05)
@@ -122,6 +128,10 @@ class Menu:
         self.is_shopped = True
         self.music.stop()
 
+    def setting(self):
+        self.in_settings = True
+        self.music.stop()
+    
     def garage(self):
         self.in_garage = True
         self.music.stop()
