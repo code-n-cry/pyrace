@@ -24,6 +24,7 @@ class Game:
         self.coin_group = coin_group
         self.nitro_group = nitro_group
         self.enemy_group = enemy_group
+        self.player_mask = pygame.mask.from_surface(player.image)
         self.road = road
         self.login = login
         self.record = Record()
@@ -42,19 +43,21 @@ class Game:
         self.coin_group.update(event)
         self.nitro_group.update(event)
         self.enemy_group.update(event)
-        #self.player_group.update(event)
         self.road.move(self.speed)
         self.coin_group.draw(self.screen)
         self.nitro_group.draw(self.screen)
         self.player_group.draw(self.screen)
         self.enemy_group.draw(self.screen)
-        if pygame.sprite.spritecollide(self.player, self.coin_group, True):
+        if pygame.sprite.spritecollide(self.player, self.coin_group, True,
+                                       pygame.sprite.collide_mask):
             self.player.got_coins += 1
             self.music_coin.play()
-        if pygame.sprite.spritecollide(self.player, self.nitro_group, True):
+        if pygame.sprite.spritecollide(self.player, self.nitro_group, True,
+                                       pygame.sprite.collide_mask):
             self.nitro()
             self.music_nitro.play()
-        if pygame.sprite.spritecollide(self.player, self.enemy_group, False):
+        if pygame.sprite.spritecollide(self.player, self.enemy_group, False,
+                                       pygame.sprite.collide_mask):
             self.player.crashed = True
             self.record.add_record(round(time.time() - self.bg_time, 2), self.login,
                                    self.music_defeat)

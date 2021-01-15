@@ -14,6 +14,7 @@ class Npc(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.mask = pygame.mask.from_surface(self.image)
         self.check = False
         if self.rect.x < 200:
             self.vy = 12

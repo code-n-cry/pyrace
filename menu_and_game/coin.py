@@ -12,6 +12,7 @@ class Coin(pygame.sprite.Sprite):
         self.image = Coin.image
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = x
         self.rect.y = y
         self.vy = road.speed

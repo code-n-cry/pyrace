@@ -8,6 +8,9 @@ class Button:
     def __init__(self, x, y, w, h, text, surface, bcolor, tcolor, hcolor, border, tsize, func, center_text=False):
         self.font = pygame.font.SysFont('Montserrat', tsize)
         self.bound = pygame.Rect(x, y, w, h)
+        self.h = h
+        self.w = w
+        self.tsize = tsize
         self.text = str(text)
         self.surface = surface
         self.button_color = bcolor
@@ -27,8 +30,12 @@ class Button:
             self.render_text(self.bound.x + 2, self.bound.y + 5)
 
     def render_text(self, x, y):
-        text_object = self.font.render(self.text, True, self.text_color)
-        self.surface.blit(text_object, (x, y))
+        if self.centralize_text:
+            text_object = self.font.render(self.text, True, self.text_color)
+            self.surface.blit(text_object, (x + self.w // 2 - self.tsize // 2, y + self.h // 2 - self.tsize // 2))
+        else:
+            text_object = self.font.render(self.text, True, self.text_color)
+            self.surface.blit(text_object, (x, y))
 
     def check_mouse_motion(self, pos):
         if self.bound.collidepoint(pos[0], pos[1]):
