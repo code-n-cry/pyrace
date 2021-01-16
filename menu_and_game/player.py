@@ -18,7 +18,7 @@ class Player(pygame.sprite.Sprite):
         self.img_name = f'Car{chosen_car}'
         self.rect = self.image.get_rect()
         self.rect.x = 450
-        self.rect.y = 580
+        self.rect.y = 450
         self.vx = 0
         self.vy = 0
         self.got_coins = 0
@@ -80,12 +80,10 @@ class Player(pygame.sprite.Sprite):
         if self.rect.x > 0:
             self.image = Player.image
             self.image.set_colorkey((255, 255, 255))
-            self.image = pygame.transform.scale(self.image, (100, 180))
 
     def unmove_right(self):
         if self.rect.x < 800 - self.rect.width:
             self.image = Player.image
-            self.image = pygame.transform.scale(self.image, (100, 180))
             self.image.set_colorkey((255, 255, 255))
 
     def check(self):
@@ -101,9 +99,8 @@ class Player(pygame.sprite.Sprite):
     def update_image(self, choosen):
         Player.image = pygame.image.load(self.path + f'\\menu_and_game\\game_data\\Car{choosen}.png')
         self.image = Player.image
-        self.image = pygame.transform.scale(self.image, (100, 180))
         self.image.set_colorkey((255, 255, 255))
         self.rect = self.image.get_rect()
         self.rect.x = 450
-        self.rect.y = 580
+        self.rect.y = 450
         self.img_name = f'Car{choosen}'

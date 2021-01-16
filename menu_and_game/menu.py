@@ -5,8 +5,6 @@ import sqlite3
 from animated_background import Car
 from record import Record
 from button import Button
-from roads import choose_roads
-
 
 
 class Menu:
@@ -48,9 +46,9 @@ class Menu:
                                    (66, 245, 206),
                                    (255, 204, 0), (227, 66, 245), 1, 46, self.roads)
 
-        self.settings_button = Button(10, 280, 232, 45, 'Настройки', screen,
-                                   (66, 245, 206),
-                                   (255, 204, 0), (227, 66, 245), 1, 46, self.setting)
+        self.settings_button = Button(width - 142, 70, 132, 45, 'Опции', screen,
+                                      (66, 245, 206),
+                                      (255, 204, 0), (227, 66, 245), 1, 46, self.setting)
         self.buttons = [self.start_button, self.quit_button, self.shop_button,
                         self.garage_button, self.roads_button, self.settings_button]
         self.game = None
@@ -79,28 +77,31 @@ class Menu:
 
     def render_record(self):
         all_records = self.record.read_records()
+
         records = []
         for data in all_records:
             if data[2] == self.login:
                 records.append(data)
+
         records.sort(key=lambda x: x[1])
-        if len(records) < 5:
+        if 0 < len(records) < 5:
             self.header = 'Последние заезды:'
         elif len(records) == 0:
             self.header = 'Начни игру!'
         else:
             self.header = 'Топ-5 заездов:'
             records = records[::-1][:5][::-1]
+        records = records[::-1]
         font = pygame.font.SysFont('Montserrat', 55)
         header = font.render(self.header, True, (255, 204, 0))
         self.screen.blit(header, (10, 400))
         if records:
-            y_coord = 710
+            y_coord = 460
             font = pygame.font.SysFont('Montserrat', 40)
             for i in records:
                 rec = font.render(f'{i[1]} сек.', True, (66, 245, 206))
                 self.screen.blit(rec, (80, y_coord))
-                y_coord -= 50
+                y_coord += 50
 
     def check_mouse_motion(self, pos):
         for btn in self.buttons:
@@ -131,7 +132,7 @@ class Menu:
     def setting(self):
         self.in_settings = True
         self.music.stop()
-    
+
     def garage(self):
         self.in_garage = True
         self.music.stop()
