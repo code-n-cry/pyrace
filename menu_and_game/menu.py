@@ -81,6 +81,7 @@ class Menu:
         records = []
         for data in all_records:
             if data[2] == self.login:
+
                 records.append(data)
 
         records.sort(key=lambda x: x[1])
