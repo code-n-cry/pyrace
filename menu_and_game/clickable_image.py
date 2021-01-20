@@ -1,7 +1,6 @@
 import pygame
 import os
 import subprocess
-from threads import Worker
 
 
 class ClickableImage:
@@ -16,11 +15,10 @@ class ClickableImage:
         self.str_img = image
         self.bound = pygame.Rect(x, y, 100, 170)
         self.screen = surface
-        self.threadpool = Worker(self.calling_window)
 
     def check_mouse_down(self, pos):
         if self.bound.collidepoint(pos[0], pos[1]):
-            self.threadpool.run()
+            self.calling_window()
 
     def calling_window(self):
         subprocess.call(f'python {self.path}info_window.py {self.str_img}')

@@ -20,6 +20,7 @@ class InfoWindow(QMainWindow):
         scaled_pixmap = pixmap.scaled(120, 200)
         self.img_label.setPixmap(scaled_pixmap)
         self.close_btn.clicked.connect(self.quit)
+        self.close_btn.setStyleSheet('border: 1px solid gray; border-radius: 5px')
         self.show()
 
     def load_data(self):

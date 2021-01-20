@@ -67,13 +67,13 @@ class Player(pygame.sprite.Sprite):
     def move_left(self):
         if self.rect.x > 0:
             self.vx = -self.set_speed()
-            self.image = pygame.transform.rotate(Player.image, 30)
+            self.image = pygame.transform.rotate(Player.image, 10)
             self.image.set_colorkey((255, 255, 255))
 
     def move_right(self):
         if self.rect.x < 800 - self.rect.width:
             self.vx = self.set_speed()
-            self.image = pygame.transform.rotate(Player.image, 330)
+            self.image = pygame.transform.rotate(Player.image, 340)
             self.image.set_colorkey((255, 255, 255))
 
     def unmove_left(self):
@@ -96,11 +96,11 @@ class Player(pygame.sprite.Sprite):
     def respawn(self):
         self.rect.x = 450
 
-    def update_image(self, choosen):
-        Player.image = pygame.image.load(self.path + f'\\menu_and_game\\game_data\\Car{choosen}.png')
+    def update_image(self, chosen):
+        Player.image = pygame.image.load(self.path + f'\\menu_and_game\\game_data\\Car{chosen}.png')
         self.image = Player.image
         self.image.set_colorkey((255, 255, 255))
         self.rect = self.image.get_rect()
         self.rect.x = 450
         self.rect.y = 450
-        self.img_name = f'Car{choosen}'
+        self.img_name = f'Car{chosen}'

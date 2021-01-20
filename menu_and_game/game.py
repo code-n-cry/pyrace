@@ -10,8 +10,8 @@ from record import Record
 
 
 class Game:
-    """Класс, отвечающий за все процессы, происходящие во время игры. Обрабатывает пересечения объектов,
-    отвечает за их спавн, а также за рендер на экране"""
+    """Класс, отвечающий за все процессы, происходящие во время игры. Обрабатывает пересечения
+    объектов, отвечает за их спавн, а также за рендер на экране"""
 
     def __init__(self, player, coin_group, nitro_group, enemy_group, player_group, road, surface,
                  login):
@@ -48,6 +48,8 @@ class Game:
         self.nitro_group.draw(self.screen)
         self.player_group.draw(self.screen)
         self.enemy_group.draw(self.screen)
+        pygame.sprite.groupcollide(self.coin_group, self.enemy_group, True, False)
+        pygame.sprite.groupcollide(self.nitro_group, self.enemy_group, True, False)
         if pygame.sprite.spritecollide(self.player, self.coin_group, True,
                                        pygame.sprite.collide_mask):
             self.player.got_coins += 1
@@ -81,16 +83,16 @@ class Game:
 
     def spawn(self):
         if self.do_spawn:
-            predv_group_coins = pygame.sprite.Group()
-            predv_group_nitro = pygame.sprite.Group()
-            predv_group_npc = pygame.sprite.Group()
+            preliminarily_group_coins = pygame.sprite.Group()
+            preliminarily_group_nitro = pygame.sprite.Group()
+            preliminarily_group_npc = pygame.sprite.Group()
             if self.chance(15):
-                coin = Coin(predv_group_coins, random.choice(
+                coin = Coin(preliminarily_group_coins, random.choice(
                     self.x_places), random.randrange(50, 350), self.road)
                 if self.check(coin):
                     self.coin_group.add(coin)
             if self.chance(3):
-                nitro = Nitro(predv_group_nitro, self.road, random.choice(
+                nitro = Nitro(preliminarily_group_nitro, self.road, random.choice(
                     self.x_places), random.randrange(50, 350))
                 if self.check(nitro):
                     self.nitro_group.add(nitro)
@@ -99,11 +101,11 @@ class Game:
                 if self.x_places[0] <= x <= self.x_places[1]:
                     x -= random.randrange(60, 90)
                     y = random.randrange(-150, -110)
-                    npc = Npc(predv_group_npc, x, y, True)
+                    npc = Npc(preliminarily_group_npc, x, y, True)
                 else:
                     x -= random.randrange(60, 90)
                     y = random.randrange(890, 990)
-                    npc = Npc(predv_group_npc, x, y, False)
+                    npc = Npc(preliminarily_group_npc, x, y, False)
                 if self.check(npc):
                     self.enemy_group.add(npc)
             if self.player.bg_time == 0:
