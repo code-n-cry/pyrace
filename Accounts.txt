@@ -1,0 +1,3 @@
+LOGIN:PASSWORD
+ALEX:aaaaaaa1N
+VLADIMIR:aaaaaaa1N
